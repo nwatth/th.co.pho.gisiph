@@ -27,10 +27,40 @@
 
     </section>
 
-    <script src="packages/quojs-2.3.6/quo.js"></script>
+    <!-- template -->
+    <!-- <script type="text/x-lng-tmpl" id="account_detail">
+        <li>
+            <strong>Username</strong>
+            <small>{{username}}</small>
+        </li>
+        <li>
+            <strong>Name</strong>
+            <small>{{fullname}}</small>
+        </li>
+        <li>
+            <strong>Hostname</strong>
+            <small>{{hostname}}</small>
+        </li>
+        <li>
+            <strong>Timestamp</strong>
+            <small>{{timestamp}}</small>
+        </li>
+    </script> -->
+    <script src="packages/quojs-2.3.6/quo.debug.js"></script>
     <script src="packages/lungo-2.2.1/lungo.js"></script>
     <!-- sandbox -->
     <script src="static/javascripts/app.js"></script>
+    <script src="static/javascripts/data.js"></script>
     <script src="static/javascripts/events.js"></script>
+    <script src="static/javascripts/template.js"></script>
+    <script src="static/javascripts/view.js"></script>
+    <script src="static/javascripts/services.js"></script>
+    <script>
+        /*var v = App.Template.create('test');
+        v.render('#unsign .empty', [
+            {title: 'This is title', href: '#', imgSrc: 'http://handlebarsjs.com/images/handlebars_logo.png'},
+            {title: 'This is 222', href: '#', imgSrc: 'http://handlebarsjs.com/images/handlebars_logo.png'},
+        ]);*/
+    </script>
 </body>
 </html>

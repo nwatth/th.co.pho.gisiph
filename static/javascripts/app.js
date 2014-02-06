@@ -14,10 +14,23 @@ var App = (function(lng, undefined) {
         history: false
     });
 
-    console.log(Lungo);
+    var isAuth = function() {
+        var auth = this.Data.auth({});
+        if (!!auth.username && !!auth.hash && !!auth.timestamp && !!auth.hostname) {
+            return auth;
+        };
+        return false;
+    };
 
     return {
-        
+        isAuth: isAuth
     };
 
 })(Lungo);
+
+Lungo.ready(function() {
+    var auth = App.isAuth();
+    if (!!auth) {
+        App.View.account_detail([auth]);
+    };
+});
