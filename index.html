@@ -1,66 +1,42 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>GISIPH</title>
+	<meta charset="UTF-8">
+	<title>GISIPH</title>
 
-    <link rel="stylesheet" href="packages/lungo-2.2.1/lungo.css">
-    <link rel="stylesheet" href="packages/lungo-2.2.1/lungo.icon.css">
-    <link rel="stylesheet" href="packages/lungo-2.2.1/lungo.theme.css">
+	<link rel="stylesheet" href="packages/lungo-2.2.1/lungo.css">
+	<link rel="stylesheet" href="packages/lungo-2.2.1/lungo.icon.css">
+	<link rel="stylesheet" href="packages/lungo-2.2.1/lungo.theme.css">
+	<link rel="stylesheet" href="static/stylesheet/gisiph.css">
 </head>
 <body>
 
-    <section id="unsign" data-aside="features" data-transition="slide">
+	<section id="unsign" data-transition="slide">
 
-        <header>
-            <h1 class="title centered">GISIPH<sub class="icon globe"></sub></h1>
-        </header>
+		<header>
+			<h1 class="title centered">GISIPH<sub class="icon globe"></sub></h1>
+		</header>
 
-        <article class="active">
-            <div class="empty">
-                <span class="icon user-md"></span>
-                <strong>Account Empty</strong>
-                <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-                <button class="anchor" data-view-section="login" data-label="Please login..."></button>
-            </div>
-        </article>
+		<article class="active">
+			<div class="empty">
+				<span class="icon user-md"></span>
+				<strong>Account Empty</strong>
+				<small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
+				<button class="anchor" data-view-section="login" data-label="Please login..." data-icon="comments"></button>
+			</div>
+		</article>
 
-    </section>
+	</section>
 
-    <!-- template -->
-    <!-- <script type="text/x-lng-tmpl" id="account_detail">
-        <li>
-            <strong>Username</strong>
-            <small>{{username}}</small>
-        </li>
-        <li>
-            <strong>Name</strong>
-            <small>{{fullname}}</small>
-        </li>
-        <li>
-            <strong>Hostname</strong>
-            <small>{{hostname}}</small>
-        </li>
-        <li>
-            <strong>Timestamp</strong>
-            <small>{{timestamp}}</small>
-        </li>
-    </script> -->
-    <script src="packages/quojs-2.3.6/quo.debug.js"></script>
-    <script src="packages/lungo-2.2.1/lungo.js"></script>
-    <!-- sandbox -->
-    <script src="static/javascripts/app.js"></script>
-    <script src="static/javascripts/data.js"></script>
-    <script src="static/javascripts/events.js"></script>
-    <script src="static/javascripts/template.js"></script>
-    <script src="static/javascripts/view.js"></script>
-    <script src="static/javascripts/services.js"></script>
-    <script>
-        /*var v = App.Template.create('test');
-        v.render('#unsign .empty', [
-            {title: 'This is title', href: '#', imgSrc: 'http://handlebarsjs.com/images/handlebars_logo.png'},
-            {title: 'This is 222', href: '#', imgSrc: 'http://handlebarsjs.com/images/handlebars_logo.png'},
-        ]);*/
-    </script>
+	<script src="packages/quojs-2.3.6/quo.debug.js"></script>
+	<script src="packages/lungo-2.2.1/lungo.js"></script>
+
+	<!-- sandbox -->
+	<script src="static/javascripts/app.js"></script>
+	<script src="static/javascripts/data.js"></script>
+	<script src="static/javascripts/events.js"></script>
+	<script src="static/javascripts/template.js"></script>
+	<script src="static/javascripts/view.js"></script>
+	<script src="static/javascripts/service.js"></script>
 </body>
 </html>

@@ -1,32 +1,19 @@
 <section id="account" data-transition="slide">
 
-    <header data-title="Account">
-        <nav>
-            <button data-view-aside="features" data-icon="menu"></button>
-        </nav>
-    </header>
+	<header data-title="Account">
+		<nav>
+			<button data-view-aside="features" data-icon="menu"></button>
+		</nav>
+	</header>
 
-    <article class="active list scroll">
-        <ul id="account_detail">
-            <li>
-                <strong>Username</strong>
-                <small>{{username}}</small>
-            </li>
-            <li>
-                <strong>Name</strong>
-                <small>{{fullname}}</small>
-            </li>
-            <li>
-                <strong>Hostname</strong>
-                <small>{{hostname}}</small>
-            </li>
-            <li>
-                <strong>Timestamp</strong>
-                <small>{{timestamp}}</small>
-            </li>
-        </ul>
-        
-        <button class="anchor cancel margin-top" data-label="Logout"></button>
-    </article>
+
+
+	<article id="about" class="active scroll indented">
+		<div>
+			<ul id="account_about" class="list"></ul>
+			
+			<button class="anchor cancel margin-top margin-bottom" data-label="Logout" data-icon="unlock"></button>
+		</div>
+	</article>
 
 </section>

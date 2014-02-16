@@ -1,0 +1,55 @@
+<section id="sync" data-transition="slide">
+
+	<header data-title="Sync data">
+		<nav>
+			<button data-view-aside="features" data-icon="menu"></button>
+		</nav>
+	</header>
+	
+	<nav data-control="groupbar">
+		<a href="#" data-view-article="import" class="active">Import</a>
+		<a href="#" data-view-article="export">Export</a>
+		<a href="#" data-view-article="detail">Detail</a>
+	</nav>
+
+
+
+	<article id="import" class="active scroll indented">
+		<div class="form">
+			<div id="sync_import" class="margin-top margin-bottom"></div>
+
+			<button class="anchor accept margin-top margin-bottom hide" data-label="Import" data-icon="download"></button>
+			<div class="progress" data-progress>
+				<span class="bar">
+					<span class="value"></span>
+				</span>
+			</div>
+		</div>
+	</article>
+
+
+
+	<article id="export" class="list scroll indented">
+		<div class="form">
+			<div id="sync_export" class="margin-top margin-bottom"></div>
+
+			<button class="anchor accept margin-top margin-bottom" data-label="Export" data-icon="upload"></button>
+		</div>
+	</article>
+
+
+
+	<article id="detail" class="scroll indented">
+		<div class="empty">
+			<span class="icon file"></span>
+            <strong>Data Empty</strong>
+            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
+		</div>
+		<!-- <div>
+			<ul id="account_detail" class="list"></ul>
+			
+			<button class="anchor cancel margin-top margin-bottom" data-label="Clear data" data-icon="trash"></button>
+		</div> -->
+	</article>
+
+</section>

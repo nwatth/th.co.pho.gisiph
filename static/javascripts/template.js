@@ -2,44 +2,42 @@ App.Template = (function(lng, app, undefined) {
 
 	var tmpl = '',
 
-	render = function(container, data) {
-		var ctnr = lng.dom(container),
-			i = 0,
-			len = data.length,
-			fragment = ''
-		;
+		render = function(container, data) {
+			var ctnr = lng.dom(container),
+				i = 0,
+				len = data.length,
+				fragment = ''
+			;
 
-		function loading(obj) {
-			var t, key, reg;
+			function loading(obj) {
+				var t, key, reg;
 
-			for (key in obj) {
-				reg = new RegExp('{{' + key + '}}', 'ig');
-                t = (t || tmpl).replace(reg, obj[key]);
-            }
+				for (key in obj) {
+					reg = new RegExp('{{' + key + '}}', 'ig');
+					t = (t || tmpl).replace(reg, obj[key]);
+				}
 
-            return t;
-		};
+				return t;
+			};
 
-		for (; i < len; i++) {
-            fragment += loading(data[i]);
-        };
+			for (; i < len; i++) {
+				fragment += loading(data[i]);
+			};
 
-        ctnr.html(fragment || ctnr.html());
-	},
+			ctnr.html(fragment || ctnr.html());
+		},
 
-	create = function(id) {
-		tmpl = document.getElementById(id).innerHTML || id;
-
-		return {
-			render: render
-		};
-	};
+		create = function(id) {
+			tmpl = lng.dom(id).html() || id;
+		}
+	;
 
 
 
 
 	return {
-		create: create
+		create: create,
+		render: render
 	};
 
 })(Lungo, App);
