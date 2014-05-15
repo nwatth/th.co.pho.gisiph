@@ -6,27 +6,24 @@
 		</nav>
     </header>
 
-	<nav data-control="groupbar">
-		<a href="#" data-view-article="chart-view" class="active">View</a>
-		<a href="#" data-view-article="chart-setting">Setting</a>
-	</nav>
-
-    <article id="chart-view" class="active list scroll">
-		<div class="empty">
-			<span class="icon warning-sign"></span>
-            <strong>No Internet Connection</strong>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-			<button class="anchor" data-label="Refresh" data-icon="refresh"></button>
+    <article id="chart_view" class="active scroll indented">
+    	<ul class="list"><li data-icon="warning-sign" class="anchor" style="background-color: #e74c3c;">แผนภูมิแสดงผลจากข้อมูลในเครื่องเท่านั้น</li></ul>
+    	<div class="form">
+    		<ul class="list"><li class="anchor contrast">การแสดงผลของแผนภูมิ</li></ul>
+			<fieldset>
+				<label class="select">
+					<select id="chart_selected">
+						<option value="percent_district_chronics">ผู้ป่วยโรคเรื้อรังในตำบล</option>
+						<option value="percent_village_chronics">ผู้ป่วยโรคเรื้อรังในแต่ละหมู่บ้าน</option>
+					</select>
+				</label>
+			</fieldset>
+			<div id="chart_visualization"></div>
 		</div>
-	</article>
 
-    <article id="chart-setting" class="list scroll">
-		<div class="empty">
-			<span class="icon cog"></span>
-            <strong>Setting</strong>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-			<button class="anchor" data-view-section="sync-data" data-view-article="import" data-label="Import data..."></button>
-		</div>
+		<ul id="chart_detail" class="list"></ul>
+
+
 	</article>
 
 </section>

@@ -1,0 +1,13 @@
+<script id="tmpl_house_detail" type="text/x-gisiph-tmpl">
+	<fieldset>
+		<textarea readonly>{{address}}</textarea>
+	</fieldset>
+	<div id="house_location">
+		<img data-house-id="{{house_id}}" src="http://maps.googleapis.com/maps/api/staticmap?center={{latitude}},{{longitude}}&zoom=14&size={{width}}x{{height}}&scale=1&markers={{latitude}},{{longitude}}&sensor=false">
+	</div>
+	<fieldset>
+		<label>พิกัด</label>
+		<input type="text" value="{{latitude}}, {{longitude}}" readonly>
+	</fieldset>
+	<button class="anchor small" data-house-id="{{house_id}}">แก้ไขพิกัด</button>
+</script>

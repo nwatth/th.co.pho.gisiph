@@ -10,9 +10,101 @@ input[type=checkbox].red:checked:after {
 	border-color: #e74c3c !important;
 }
 
-.notification .progress[data-progress] {
-	height: 1.3em;
+.notification #import_progress {
+	margin: 0;
 }
-.notification .progress[data-progress] .value {
+.notification #import_progress .bar {
 	height: 1em;
+}
+
+textarea {
+	resize: none;
+}
+
+#house_detail #house_location,
+.notification.show div {
+	overflow: hidden;
+}
+
+#house_detail #house_location img,
+.notification.show img {
+	position: relative;
+}
+
+#house_photos img, #chronic_photos img {
+	height: 100%;
+}
+
+.horizontal {
+	height: 164px;
+}
+
+.wrapper {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+}
+
+#map_location {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+section .list li.unseen {
+	-webkit-box-shadow: inset 4px 0 #cccccc;
+	-moz-box-shadow: inset 4px 0 #cccccc;
+	-ms-box-shadow: inset 4px 0 #cccccc;
+	-o-box-shadow: inset 4px 0 #cccccc;
+	box-shadow: inset 4px 0 #cccccc;
+}
+section .list li.level_0 {
+	-webkit-box-shadow: inset 4px 0 #ffffff;
+	-moz-box-shadow: inset 4px 0 #ffffff;
+	-ms-box-shadow: inset 4px 0 #ffffff;
+	-o-box-shadow: inset 4px 0 #ffffff;
+	box-shadow: inset 4px 0 #ffffff;
+}
+section .list li.level_1 {
+	-webkit-box-shadow: inset 4px 0 #00ff00;
+	-moz-box-shadow: inset 4px 0 #00ff00;
+	-ms-box-shadow: inset 4px 0 #00ff00;
+	-o-box-shadow: inset 4px 0 #00ff00;
+	box-shadow: inset 4px 0 #00ff00;
+}
+section .list li.level_2 {
+	-webkit-box-shadow: inset 4px 0 #007700;
+	-moz-box-shadow: inset 4px 0 #007700;
+	-ms-box-shadow: inset 4px 0 #007700;
+	-o-box-shadow: inset 4px 0 #007700;
+	box-shadow: inset 4px 0 #007700;
+}
+section .list li.level_3 {
+	-webkit-box-shadow: inset 4px 0 #ffff00;
+	-moz-box-shadow: inset 4px 0 #ffff00;
+	-ms-box-shadow: inset 4px 0 #ffff00;
+	-o-box-shadow: inset 4px 0 #ffff00;
+	box-shadow: inset 4px 0 #ffff00;
+}
+section .list li.level_4 {
+	-webkit-box-shadow: inset 4px 0 #ff7f00;
+	-moz-box-shadow: inset 4px 0 #ff7f00;
+	-ms-box-shadow: inset 4px 0 #ff7f00;
+	-o-box-shadow: inset 4px 0 #ff7f00;
+	box-shadow: inset 4px 0 #ff7f00;
+}
+section .list li.level_5 {
+	-webkit-box-shadow: inset 4px 0 #ff0000;
+	-moz-box-shadow: inset 4px 0 #ff0000;
+	-ms-box-shadow: inset 4px 0 #ff0000;
+	-o-box-shadow: inset 4px 0 #ff0000;
+	box-shadow: inset 4px 0 #ff0000;
+}
+section .list li.level_6 {
+	-webkit-box-shadow: inset 4px 0 #000000;
+	-moz-box-shadow: inset 4px 0 #000000;
+	-ms-box-shadow: inset 4px 0 #000000;
+	-o-box-shadow: inset 4px 0 #000000;
+	box-shadow: inset 4px 0 #000000;
 }

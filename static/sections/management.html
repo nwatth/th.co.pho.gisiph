@@ -1,6 +1,6 @@
 <section id="management" data-transition="slide">
 
-    <header data-title="Management" class="extended">
+	<header data-title="Management" class="extended">
 		<nav>
 			<button data-view-aside="features" data-icon="menu"></button>
 		</nav>
@@ -8,25 +8,25 @@
 
 	<nav data-control="groupbar">
 		<a href="#" data-view-article="houses" class="active">Houses</a>
-		<a href="#" data-view-article="patients">Patients</a>
+		<a href="#" data-view-article="persons">Persons</a>
 	</nav>
 
-    <article id="houses" class="active list scroll">
-		<div class="empty">
-			<span class="icon home"></span>
-            <strong>Houses Empty</strong>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-			<button class="anchor" data-view-section="sync-data" data-view-article="import" data-label="Import data..." data-icon="comments"></button>
+	<article id="houses" class="active scroll indented">
+		<div class="form">
+			<fieldset data-icon="search">
+				<input id="houses_filter" type="search" placeholder="Search...">
+			</fieldset>
 		</div>
+		<ul id="manage_houses" class="list"></ul>
 	</article>
 
-    <article id="patients" class="list scroll">
-		<div class="empty">
-			<span class="icon group"></span>
-            <strong>Patients Empty</strong>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-			<button class="anchor" data-view-section="sync-data" data-view-article="import" data-label="Import data..."></button>
+	<article id="persons" class="scroll indented">
+		<div class="form">
+			<fieldset data-icon="search">
+				<input id="persons_filter" type="search" placeholder="Search...">
+			</fieldset>
 		</div>
+		<ul id="manage_persons" class="list"></ul>
 	</article>
 	
 </section>

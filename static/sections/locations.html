@@ -7,25 +7,64 @@
     </header>
 
 	<nav data-control="groupbar">
-		<a href="#" data-view-article="map-view" class="active">View</a>
-		<a href="#" data-view-article="map-setting">Setting</a>
+		<a href="#" data-view-article="map_view" class="active">View</a>
+		<a href="#" data-view-article="map_setting">Setting</a>
 	</nav>
 
-    <article id="map-view" class="active list scroll">
-		<div class="empty">
-			<span class="icon warning-sign"></span>
-            <strong>No Internet Connection</strong>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-			<button class="anchor" data-label="Refresh" data-icon="refresh"></button>
-		</div>
+    <article id="map_view" class="active">
+    	<div class="wrapper">
+    		<div id="map_location"></div>
+    	</div>
 	</article>
 
-    <article id="map-setting" class="list scroll">
-		<div class="empty">
-			<span class="icon cog"></span>
-            <strong>Setting</strong>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident!</small>
-			<button class="anchor" data-view-section="sync-data" data-view-article="import" data-label="Import data..."></button>
+    <article id="map_setting" class="scroll indented">
+
+    	<div id="map_chronics" class="form">
+			<ul class="list"><li class="anchor contrast">โรคเรื้อรังของโรคผู้ป่วย</li></ul>
+			<fieldset>
+				<label class="anchor">โรคเบาหวาน</label>
+				<input type="checkbox" name="map_chronics" value="diabetes" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">โรคความดันโลหิตสูง</label>
+				<input type="checkbox" name="map_chronics" value="hypertension" class="inline right" checked>
+			</fieldset>
+		</div>
+
+		<div id="map_colors" class="form">
+			<ul class="list"><li class="anchor contrast">ระดับความรุนแรงของโรคผู้ป่วย</li></ul>
+			<fieldset>
+				<label class="anchor">กลุ่มที่ยังไม่ได้รับการตรวจ</label>
+				<input type="checkbox" name="map_colors" value="unseen" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มปกติ</label>
+				<input type="checkbox" name="map_colors" value="level_0" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มเสี่ยง</label>
+				<input type="checkbox" name="map_colors" value="level_1" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มผู้ป่วยอาการระดับ 0</label>
+				<input type="checkbox" name="map_colors" value="level_2" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มผู้ป่วยอาการระดับ 1</label>
+				<input type="checkbox" name="map_colors" value="level_3" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มผู้ป่วยอาการระดับ 2</label>
+				<input type="checkbox" name="map_colors" value="level_4" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มผู้ป่วยอาการระดับ 3</label>
+				<input type="checkbox" name="map_colors" value="level_5" class="inline right" checked>
+			</fieldset>
+			<fieldset>
+				<label class="anchor">กลุ่มผู้ป่วยที่มีภาวะแทรกซ้อน</label>
+				<input type="checkbox" name="map_colors" value="level_6" class="inline right" checked>
+			</fieldset>
 		</div>
 	</article>
 
