@@ -153,7 +153,7 @@ App.Data = (function(lng, app, undefined) {
 			;
 			app.Data.Sql.query(
 				capture ? new_photo : old_photo,
-				[photo_id, app.Data.auth().username],
+				[app.Data.auth().username, photo_id],
 				callback
 			);
 		}

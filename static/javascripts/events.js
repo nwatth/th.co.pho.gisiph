@@ -563,7 +563,7 @@ App.Events = (function(lng, app, undefined) {
 			description: 'Are you sure you want to import ?',
 			accept: {
 				label: 'Yes, I\'m sure.',
-				callback: function(){
+				callback: function() {
 					setTimeout(function() {
 						app.Service.sync_import({villcodes: villcodes});
 					}, 203);
