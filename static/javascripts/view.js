@@ -512,12 +512,18 @@ App.View = (function(lng, app, undefined) {
 			var chart_selected = document.getElementById('chart_selected'),
 				chart_call = chart_selected.options[chart_selected.selectedIndex].value,
 				chart_view = {
+					// ผู้ป่วยโรคเรื้อรัง
 					percent_district_chronics: function() {
 						app.Data.Sql.query(
-							'SELECT (CASE chronics.disease WHEN \'diabetes\' THEN \'โรคเบาหวาน\' WHEN \'hypertension\' THEN \'โรคความดันโลหิตสูง\' END) AS column, COUNT(chronics.disease) AS value FROM (SELECT chronics.disease FROM chronics LEFT JOIN visited ON chronics.person_id = visited.person_id GROUP BY chronics.person_id, chronics.disease) AS chronics GROUP BY chronics.disease ORDER BY chronics.disease',
+							'SELECT chronics.person_id, chronics.disease FROM chronics GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
-								var colors = ['#8e44ad', '#27ae60', '#2ecc71', '#2980b9', '#d35400'],
+								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
+									chronics_name = {
+										both: 'ผู้ป่วยทั้งสองโรค',
+										hypertension: 'ผู้ป่วยโรคความดันโลหิตสูง',
+										diabetes: 'ผู้ป่วยโรคเบาหวาน'
+									},
 									columns = [
 										['string', 'โรค'], ['number', 'จำนวน']
 									],
@@ -536,20 +542,44 @@ App.View = (function(lng, app, undefined) {
 										},
 										vAxis: {minValue:0}
 									},
-									detail = []
+									detail = [],
+									fill = {}
 								;
 
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
 									row = rs.rows.item(i);
 
-									rows.push([row.column, row.value]);
+									if (typeof fill[row.person_id] !== 'object')
+										fill[row.person_id] = [];
+									fill[row.person_id].push(row.disease);
+									
 
-									detail.push($$.mix(row, {
-										color_column: colors[i],
-										value: 'จำนวน: ' + row.value + ' คน'
-										//value: '<fieldset><label>จำนวน</label><input type="text" value="' + row.value + ' คน" readonly /></fieldset>'
-									}));
+								};
 
+								fill = (function(obj) {
+									var tmp = {both: 0};
+									for (i in obj) {
+										if (obj[i].length > 1) {
+											tmp['both']++;
+											continue;
+										} else {
+											if (typeof tmp[obj[i][0]] === 'undefined')
+												tmp[obj[i][0]] = 0;
+											tmp[obj[i][0]]++;
+										};
+									};
+									return tmp;
+								}) (fill);
+
+								var i = 0;
+								for (k in fill) {
+									rows.push([chronics_name[k], fill[k]]);
+
+									detail.push({
+										color_column: colors[i++],
+										column: chronics_name[k],
+										value: 'จำนวน: ' + fill[k] + ' คน'
+									});
 								};
 
 								app.Service.Visualization.setDataTable(columns, rows, option);
@@ -561,7 +591,7 @@ App.View = (function(lng, app, undefined) {
 						);
 					}, // end of percent_district_chronics
 
-					percent_village_chronics: function() {
+					percent_village_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละหมู่บ้าน */
 						
 						/*var Color = {
 							'prev_color': '',
@@ -620,7 +650,7 @@ App.View = (function(lng, app, undefined) {
 							'SELECT vill.villname, COUNT(CASE vill.disease WHEN \'diabetes\' THEN 1 END) AS diabetes, COUNT(CASE vill.disease WHEN \'hypertension\' THEN 1 END) AS hypertension FROM (SELECT persons.person_id, houses.villcode, villages.villname, chronics.disease FROM houses JOIN villages ON houses.villcode = villages.villcode JOIN persons ON houses.house_id = persons.house_id JOIN chronics ON persons.person_id = chronics.person_id GROUP BY houses.villcode, persons.person_id, chronics.disease) AS vill GROUP BY vill.villcode',
 							[],
 							function(tx, rs) {
-								var colors = ['#8e44ad', '#27ae60', '#2ecc71', '#2980b9', '#d35400'],
+								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
 									columns = [
 										['string', 'หมู่บ้าน'], ['number', 'โรคเบาหวาน'], ['number', 'โรคความดันโลหิตสูง']
 									],
@@ -682,7 +712,74 @@ App.View = (function(lng, app, undefined) {
 								app.Template.render('#chart_detail', detail);
 							}
 						);
-					}  // end of percent_village_chronics
+					},  // end of percent_village_chronics
+
+					percent_year_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละปี */
+						app.Data.Sql.query(
+							'SELECT vill.villname, COUNT(CASE vill.disease WHEN \'diabetes\' THEN 1 END) AS diabetes, COUNT(CASE vill.disease WHEN \'hypertension\' THEN 1 END) AS hypertension FROM (SELECT persons.person_id, houses.villcode, villages.villname, chronics.disease FROM houses JOIN villages ON houses.villcode = villages.villcode JOIN persons ON houses.house_id = persons.house_id JOIN chronics ON persons.person_id = chronics.person_id GROUP BY houses.villcode, persons.person_id, chronics.disease) AS vill GROUP BY vill.villcode',
+							[],
+							function(tx, rs) {
+								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
+									columns = [
+										['string', 'หมู่บ้าน'], ['number', 'โรคเบาหวาน'], ['number', 'โรคความดันโลหิตสูง']
+									],
+									rows = [],
+									row = {},
+									option = {
+										colors: colors,
+										legend: {
+											position: 'bottom',
+											alignment: 'center',
+											textStyle: {
+												fontName: 'Open Sans',
+												fontSize: 16/1.25
+											}
+										},
+										vAxis: {
+											title: 'จำนวนผู้ป่วย (คน)',
+											minValue:0,
+											titleTextStyle: {
+												fontName: 'Open Sans',
+												fontSize: 14/1.25
+											}
+										}
+									},
+									detail = [],
+									disease = {
+										diabetes: 0,
+										hypertension: 0
+									}
+								;
+
+								for (var i = 0, len = rs.rows.length; i < len; i++) {
+									row = rs.rows.item(i);
+
+									rows.push([row.villname, row.diabetes, row.hypertension]);
+
+									disease.diabetes += row.diabetes;
+									disease.hypertension += row.hypertension;
+
+									detail[0] = $$.mix(row, {
+										color_column: colors[0],
+										column: 'โรคเบาหวาน <em>(จำนวน: ' + disease.diabetes + ' คน)</em>',
+										value: (detail[0] ? detail[0].value : '') + '<p>' + row.villname + ': ' + row.diabetes + ' คน</p>'
+									});
+
+									detail[1] = $$.mix(row, {
+										color_column: colors[1],
+										column: 'โรคความดันโลหิตสูง <em>(จำนวน: ' + disease.hypertension + ' คน)</em>',
+										value: (detail[1] ? detail[1].value : '') + '<p>' + row.villname + ': ' + row.hypertension + ' คน</p>'
+									});
+								};
+
+								app.Service.Visualization.setDataTable(columns, rows, option);
+								app.Service.Visualization.render('LineChart');
+
+								app.Template.create('#tmpl_charts_detail');
+								app.Template.render('#chart_detail', detail);
+							}
+						);
+					} // end of percent_year_chronics
 				}
 				
 			;
