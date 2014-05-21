@@ -557,16 +557,16 @@ App.View = (function(lng, app, undefined) {
 								};
 
 								fill = (function(obj) {
-									var tmp = {both: 0};
+									var tmp = {both: 0, diabetes: 0, hypertension:0};
 									for (i in obj) {
-										if (obj[i].length > 1) {
-											tmp['both']++;
-											continue;
-										} else {
-											if (typeof tmp[obj[i][0]] === 'undefined')
-												tmp[obj[i][0]] = 0;
-											tmp[obj[i][0]]++;
+										var d = 0, h = 0;
+										for (j in obj[i]) {
+											if (obj[i][j] == 'diabetes') d++;
+											else if (obj[i][j] == 'hypertension') h++;
 										};
+										if (d > 0 && h > 0) tmp['both']++;
+										else if (d > 0) tmp['diabetes']++;
+										else if (h > 0) tmp['hypertension']++;
 									};
 									return tmp;
 								}) (fill);
