@@ -593,7 +593,7 @@ App.View = (function(lng, app, undefined) {
 
 					percent_village_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละหมู่บ้าน */
 						app.Data.Sql.query(
-							'SELECT villages.villname, chronics.person_id, chronics.disease FROM chronics JOIN persons ON chronics.person_id = persons.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode',
+							'SELECT villages.villname, chronics.person_id, chronics.disease FROM chronics JOIN persons ON chronics.person_id = persons.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
 								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
@@ -662,19 +662,19 @@ App.View = (function(lng, app, undefined) {
 
 									detail[0] = $$.mix(row, {
 										color_column: colors[0],
-										column: 'โรคเบาหวาน <em>(จำนวน: ' + diabetes.length + ' คน)</em>',
-										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + diabetes.length + ' คน</p>'
+										column: 'ผู้ป่วยทั้งสองโรค <em>(' + both.length + ' คน)</em>',
+										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + both.length + ' คน</p>'
 									});
 
 									detail[1] = $$.mix(row, {
 										color_column: colors[1],
-										column: 'โรคเบาหวาน <em>(จำนวน: ' + diabetes.length + ' คน)</em>',
+										column: 'ผู้ป่วยโรคเบาหวาน <em>(' + diabetes.length + ' คน)</em>',
 										value: (detail[1] ? detail[1].value : '') + '<p>' + k + ': ' + diabetes.length + ' คน</p>'
 									});
 
 									detail[2] = $$.mix(row, {
 										color_column: colors[2],
-										column: 'โรคความดันโลหิตสูง <em>(จำนวน: ' + hypertension.length + ' คน)</em>',
+										column: 'ผู้ป่วยโรคความดันโลหิตสูง <em>(' + hypertension.length + ' คน)</em>',
 										value: (detail[2] ? detail[2].value : '') + '<p>' + k + ': ' + hypertension.length + ' คน</p>'
 									});
 								};
@@ -690,12 +690,12 @@ App.View = (function(lng, app, undefined) {
 
 					percent_year_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละปี */
 						app.Data.Sql.query(
-							'SELECT vill.villname, COUNT(CASE vill.disease WHEN \'diabetes\' THEN 1 END) AS diabetes, COUNT(CASE vill.disease WHEN \'hypertension\' THEN 1 END) AS hypertension FROM (SELECT persons.person_id, houses.villcode, villages.villname, chronics.disease FROM houses JOIN villages ON houses.villcode = villages.villcode JOIN persons ON houses.house_id = persons.house_id JOIN chronics ON persons.person_id = chronics.person_id GROUP BY houses.villcode, persons.person_id, chronics.disease) AS vill GROUP BY vill.villcode',
+							'SELECT chronics.person_id, chronics.disease, strftime(\'%Y\', chronics.datefirstdiag)+543 AS yearfirstdiag FROM chronics GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
 								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
 									columns = [
-										['string', 'หมู่บ้าน'], ['number', 'โรคเบาหวาน'], ['number', 'โรคความดันโลหิตสูง']
+										['string', 'หมู่บ้าน'], ['number', 'ผู้ป่วยทั้งสองโรค'], ['number', 'ผู้ป่วยโรคเบาหวาน'], ['number', 'ผู้ป่วยโรคความดันโลหิตสูง']
 									],
 									rows = [],
 									row = {},
@@ -719,6 +719,7 @@ App.View = (function(lng, app, undefined) {
 										}
 									},
 									detail = [],
+									fill = {},
 									disease = {
 										diabetes: 0,
 										hypertension: 0
@@ -728,21 +729,50 @@ App.View = (function(lng, app, undefined) {
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
 									row = rs.rows.item(i);
 
-									rows.push([row.villname, row.diabetes, row.hypertension]);
+									if (typeof fill[row.yearfirstdiag] !== 'object')
+										fill[row.yearfirstdiag] = [];
+									fill[row.yearfirstdiag].push({person_id: row.person_id, disease: row.disease});
+								};
 
+								for (k in fill) {
+									var both = [], diabetes = [], hypertension = [];
+									for (var i = 0; i < fill[k].length; i++) {
+										if (fill[k][i].disease === 'diabetes' && diabetes.indexOf(fill[k][i].person_id) === -1)
+											diabetes.push(fill[k][i].person_id);
+										else if (fill[k][i].disease === 'hypertension' && hypertension.indexOf(fill[k][i].person_id) === -1)
+											hypertension.push(fill[k][i].person_id);
+									};
+									both = diabetes.filter(function(n) {
+										return hypertension.indexOf(n) > -1;
+									});
+									var i = 0, idx = -1;
+									do {
+										idx = diabetes.indexOf(both[i]);
+										if (idx > -1) diabetes.splice(idx, 1);
+										idx = hypertension.indexOf(both[i]);
+										if (idx > -1) hypertension.splice(idx, 1);
+									} while(++i < both.length);
+
+									rows.push([k, both.length, diabetes.length, hypertension.length]);
 									disease.diabetes += row.diabetes;
 									disease.hypertension += row.hypertension;
 
 									detail[0] = $$.mix(row, {
 										color_column: colors[0],
-										column: 'โรคเบาหวาน <em>(จำนวน: ' + disease.diabetes + ' คน)</em>',
-										value: (detail[0] ? detail[0].value : '') + '<p>' + row.villname + ': ' + row.diabetes + ' คน</p>'
+										column: 'ผู้ป่วยทั้งสองโรค <em>(จำนวน: ' + both.length + ' คน)</em>',
+										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + both.length + ' คน</p>'
 									});
 
 									detail[1] = $$.mix(row, {
 										color_column: colors[1],
-										column: 'โรคความดันโลหิตสูง <em>(จำนวน: ' + disease.hypertension + ' คน)</em>',
-										value: (detail[1] ? detail[1].value : '') + '<p>' + row.villname + ': ' + row.hypertension + ' คน</p>'
+										column: 'ผู้ป่วยโรคเบาหวาน <em>(จำนวน: ' + diabetes.length + ' คน)</em>',
+										value: (detail[1] ? detail[1].value : '') + '<p>' + k + ': ' + diabetes.length + ' คน</p>'
+									});
+
+									detail[2] = $$.mix(row, {
+										color_column: colors[2],
+										column: 'ผู้ป่วยโรคความดันโลหิตสูง <em>(จำนวน: ' + hypertension.length + ' คน)</em>',
+										value: (detail[2] ? detail[2].value : '') + '<p>' + k + ': ' + hypertension.length + ' คน</p>'
 									});
 								};
 
