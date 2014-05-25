@@ -477,10 +477,13 @@ App.Service.Visualization = (function(lng, app, undefined) {
 			return rows;
 		},
 
-		setDataTable = function(columns, rows, option) {
+		setDataTable = function(columns, rows, option) {console.log(columns);
 			onnlineChecker(function() {
 				for (var i = 0; i < columns.length; i++) {
-					data_table.addColumn(columns[i][0], columns[i][1]);
+					if (typeof columns[i][0] === 'object')
+						data_table.addColumn(columns[i][0]);
+					else
+						data_table.addColumn(columns[i][0], columns[i][1]);
 				};
 
 				data_table.addRows(rows);

@@ -478,6 +478,15 @@ App.Events = (function(lng, app, undefined) {
 	 *	Chart section loaded event.
 	 */
 	lng.dom('section#charts').on('load', function(event) {
+		var districts = app.Data.districts();
+		for (var i = 0; i < districts.length; i++) {
+			lng.dom('.hypertension_chart')
+					.append('<option value="hypertension_chart" data-villcode="'+districts[i].value+'">'+
+							districts[i].display+'</option>');
+			lng.dom('.diabetes_chart')
+					.append('<option value="diabetes_chart" data-villcode="'+districts[i].value+'">'+
+							districts[i].display+'</option>');
+		};
 		app.Service.Visualization.create();
 		app.View.chart_view();
 	});
@@ -491,8 +500,11 @@ App.Events = (function(lng, app, undefined) {
 	 *	Selected chart in options event.
 	 */
 	document.getElementById('chart_selected').onchange = function(event) {
+		var chart_selected = document.getElementById('chart_selected'),
+			villcode = chart_selected.options[chart_selected.selectedIndex].dataset.villcode
+		;
 		app.Service.Visualization.create();
-		app.View.chart_view();
+		app.View.chart_view(villcode);
 	};
 
 

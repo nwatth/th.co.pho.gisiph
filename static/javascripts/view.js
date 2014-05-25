@@ -505,7 +505,7 @@ App.View = (function(lng, app, undefined) {
 			);
 		},
 
-		chart_view = function() {
+		chart_view = function(villcode) {
 			lng.dom('#chart_visualization').empty();
 			lng.dom('#chart_detail').empty();
 
@@ -783,12 +783,103 @@ App.View = (function(lng, app, undefined) {
 								app.Template.render('#chart_detail', detail);
 							}
 						);
-					} // end of percent_year_chronics
+					}, // end of percent_year_chronics
+
+					hypertension_chart: function(villcode) { /* แผนภูมิผู้ป่วยโรคความดันโลหิตสูง */
+						app.Data.Sql.query(
+							'SELECT persons.person_id, chronics.disease ISNULL AS is_disease, visited.last_pressure, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'hypertension\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
+							[villcode],
+							function(tx, rs) {
+								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
+									columns = [
+										['string', 'ระดับความรุนแรง'], ['number', 'จำนวน'], [{type: 'string', role: 'style'}]
+									],
+									rows = [
+										['ปกติ', 0, 'color: '+colors[0]+'; stroke-color: #000; stroke-width: .5;'],
+										['เสี่ยง', 0, 'color: '+colors[1]+';'],
+										['ผู้ป่วยระดับ 0', 0, 'color: '+colors[2]+';'],
+										['ผู้ป่วยระดับ 1', 0, 'color: '+colors[3]+';'],
+										['ผู้ป่วยระดับ 2', 0, 'color: '+colors[4]+';'],
+										['ผู้ป่วยระดับ 3', 0, 'color: '+colors[5]+';'],
+										['ผู้ป่วยมีโรคแทรกซ้อน', 0, 'color: '+colors[6]+';']
+									],
+									row = {},
+									option = {
+										colors: colors,
+										legend: {
+											position: 'none',
+											alignment: 'center',
+											textStyle: {
+												fontName: 'Open Sans',
+												fontSize: 16/1.25
+											}
+										},
+										vAxis: {
+											title: 'จำนวนผู้ป่วย (คน)',
+											minValue:0,
+											titleTextStyle: {
+												fontName: 'Open Sans',
+												fontSize: 14/1.25
+											}
+										}
+									},
+									detail = [],
+									fill = {}
+								;
+
+								var pres, top, bot;
+								for (var i = 0, len = rs.rows.length; i < len; i++) {
+									row = rs.rows.item(i);
+									pres = (row.last_pressure || '-1/-1');
+									top = parseInt(pres.substring(0, pres.indexOf('/')));
+									bot = parseInt(pres.substring(pres.indexOf('/')+1, pres.length));
+
+									if (typeof fill[row.person_id] !== 'object')
+										fill[row.person_id] = {};
+									fill[row.person_id] = {is_disease: row.is_disease, top_pressure: top, down_pressure: bot, incurrent: row.incurrent || 0};
+								};
+
+								for (k in fill) {
+									if (fill[k].incurrent == true && 
+										fill[k].is_disease == true) rows[6][1]++;
+									else if (fill[k].top_pressure >= 180 && fill[k].is_disease == true &&
+											fill[k].down_pressure >= 110) rows[5][1]++;
+									else if (fill[k].top_pressure >= 160 && fill[k].is_disease == true &&
+											fill[k].down_pressure >= 100) rows[4][1]++;
+									else if (fill[k].top_pressure >= 140 && fill[k].is_disease == true &&
+											fill[k].down_pressure >= 90) rows[3][1]++;
+									else if (fill[k].is_disease == true) rows[2][1]++;
+									else if (fill[k].top_pressure >= 120 && fill[k].is_disease == false &&
+											fill[k].down_pressure >= 80) rows[1][1]++;
+									else if (fill[k].is_disease == false) rows[0][1]++;
+								};
+
+								for (var i = 0, len = rows.length; i < len; i++) {
+									detail[i] = {
+										css: (i !== 0) ? '' : 'text-shadow: -1px 0 gray, 0 1px gray, 1px 0 gray, 0 -1px gray;',
+										color_column: colors[i],
+										column: 'กลุ่ม' + rows[i][0],
+										value: rows[i][1]
+									};
+								};
+
+								app.Service.Visualization.setDataTable(columns, rows, option);
+								app.Service.Visualization.render('ColumnChart');
+
+								app.Template.create('#tmpl_charts_detail');
+								app.Template.render('#chart_detail', detail);
+							}
+						);
+					}, // end of hypertension_chart
+
+					diabetes_chart: function() { /* แผนภูมิผู้ป่วยโรคความดันโลหิตสูง */
+
+					} // end of diabetes_chart
 				}
 				
 			;
 
-			chart_view[chart_call]();
+			chart_view[chart_call](villcode);
 		},
 
 		sync_import = function() {
