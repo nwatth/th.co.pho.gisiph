@@ -128,13 +128,13 @@ App.Data = (function(lng, app, undefined) {
 			);
 		},
 
-		house_photo_remove = function(photo_id, capture, callback) {
-			var old_photo = 'UPDATE gisiph_photo_house SET status = \'DELETE\' WHERE ref_id = ?',
-				new_photo = 'UPDATE gisiph_photo_house SET status = \'DELETE\' WHERE photo_id = ?'
+		house_photo_remove = function(photo_id, capture, callback) {console.log(photo_id, capture);
+			var old_photo = 'INSERT INTO gisiph_photo_house (house_id, ref_id, src, uedit, status) SELECT photos_house.house_id, photos_house.photo_id AS ref_id, photos_house.src, ? AS uedit, \'DELETE\' AS status FROM photos_house WHERE photos_house.photo_id = ?',
+				new_photo = 'UPDATE gisiph_photo_house SET status = \'DELETE\', uedit = ? WHERE photo_id = ?'
 			;
 			app.Data.Sql.query(
-				capture ? old_photo : new_photo,
-				[photo_id],
+				capture ? new_photo : old_photo,
+				[app.Data.auth().username, photo_id],
 				callback
 			);
 		},

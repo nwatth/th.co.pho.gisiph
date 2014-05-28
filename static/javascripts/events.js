@@ -340,8 +340,7 @@ App.Events = (function(lng, app, undefined) {
 	lng.dom('section#house article#detail ul#house_photos_view img').hold(function(event) {
 		var house_id = lng.dom(this).data('house-id'),
 			photo_id = lng.dom(this).data('photo-id'),
-			capture = lng.dom(this).data('capture') === 'true' ? true : false,
-			src = lng.dom(this).attr('src')
+			capture = lng.dom(this).data('capture') === 'true' ? true : false
 		;
 
 		lng.Notification.show();
