@@ -842,15 +842,15 @@ App.View = (function(lng, app, undefined) {
 								for (k in fill) {
 									if (fill[k].incurrent == true && 
 										fill[k].is_disease == true) rows[6][1]++;
-									else if (fill[k].top_pressure >= 180 && fill[k].is_disease == true &&
-											fill[k].down_pressure >= 110) rows[5][1]++;
-									else if (fill[k].top_pressure >= 160 && fill[k].is_disease == true &&
-											fill[k].down_pressure >= 100) rows[4][1]++;
-									else if (fill[k].top_pressure >= 140 && fill[k].is_disease == true &&
-											fill[k].down_pressure >= 90) rows[3][1]++;
+									else if ((fill[k].top_pressure >= 180  || fill[k].down_pressure >= 110)
+											&& fill[k].is_disease == true) rows[5][1]++;
+									else if ((fill[k].top_pressure >= 160 || fill[k].down_pressure >= 100)
+											&& fill[k].is_disease == true) rows[4][1]++;
+									else if ((fill[k].top_pressure >= 140 || fill[k].down_pressure >= 90)
+											&& fill[k].is_disease == true) rows[3][1]++;
 									else if (fill[k].is_disease == true) rows[2][1]++;
-									else if (fill[k].top_pressure >= 120 && fill[k].is_disease == false &&
-											fill[k].down_pressure >= 80) rows[1][1]++;
+									else if ((fill[k].top_pressure >= 120  || fill[k].down_pressure >= 80)
+											&& fill[k].is_disease == false) rows[1][1]++;
 									else if (fill[k].is_disease == false) rows[0][1]++;
 								};
 
