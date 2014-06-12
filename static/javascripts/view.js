@@ -787,7 +787,7 @@ App.View = (function(lng, app, undefined) {
 
 					hypertension_chart: function(villcode) { /* แผนภูมิผู้ป่วยโรคความดันโลหิตสูง */
 						app.Data.Sql.query(
-							'SELECT persons.person_id, chronics.disease ISNULL AS is_disease, visited.last_pressure, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'hypertension\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
+							'SELECT persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_pressure, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'hypertension\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
 							[villcode],
 							function(tx, rs) {
 								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
@@ -829,7 +829,7 @@ App.View = (function(lng, app, undefined) {
 
 								var pres, top, bot;
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
-									row = rs.rows.item(i);
+									row = rs.rows.item(i);console.log(row);
 									pres = (row.last_pressure || '-1/-1');
 									top = parseInt(pres.substring(0, pres.indexOf('/')));
 									bot = parseInt(pres.substring(pres.indexOf('/')+1, pres.length));
@@ -840,6 +840,17 @@ App.View = (function(lng, app, undefined) {
 								};
 
 								for (k in fill) {
+									/*if (fill[k].is_disease == true) {
+										if (fill[k].incurrent == true) rows[6][1]++;
+										else if (fill[k].top_pressure >= 180 || fill[k].down_pressure >= 110) rows[5][1]++;
+										else if (fill[k].top_pressure >= 160 || fill[k].down_pressure >= 100) rows[4][1]++;
+										else if (fill[k].top_pressure >= 140 || fill[k].down_pressure >= 90) rows[3][1]++;
+										else rows[2][1]++;
+									}
+									else {
+										if (fill[k].top_pressure >= 120  || fill[k].down_pressure >= 80) rows[1][1]++;
+										else rows[0][1]++;
+									}*/
 									if (fill[k].incurrent == true && 
 										fill[k].is_disease == true) rows[6][1]++;
 									else if ((fill[k].top_pressure >= 180  || fill[k].down_pressure >= 110)
@@ -874,7 +885,7 @@ App.View = (function(lng, app, undefined) {
 
 					diabetes_chart: function() { /* แผนภูมิผู้ป่วยโรคความดันโลหิตสูง */
 						app.Data.Sql.query(
-							'SELECT persons.person_id, chronics.disease ISNULL AS is_disease, visited.last_sugarblood, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'diabetes\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
+							'SELECT persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_sugarblood, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'diabetes\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
 							[villcode],
 							function(tx, rs) {
 								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
