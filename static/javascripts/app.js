@@ -35,6 +35,7 @@ var App = (function(lng, undefined) {
 	});
 
 	lng.ready(function() {
+		// screen.lockOrientation('portrait');
 		var auth = App.isAuth();
 		if (!!auth) {
 			/*lng.Router.section('account');*/

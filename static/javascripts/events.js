@@ -311,7 +311,8 @@ App.Events = (function(lng, app, undefined) {
 							{
 								quality: 50,
 								targetHeight: 300,
-								destinationType: Camera.DestinationType.DATA_URL
+								destinationType: Camera.DestinationType.DATA_URL,
+								correctOrientation: true
 							}
 						);
 					} else {
@@ -338,6 +339,7 @@ App.Events = (function(lng, app, undefined) {
 	 *	Photo remove button holdded event.
 	 */
 	lng.dom('section#house article#detail ul#house_photos_view img').hold(function(event) {
+		if (this.src.indexOf('static/images/connection_fail.png') !== -1) { console.log('return!!!'); return false; };
 		var house_id = lng.dom(this).data('house-id'),
 			photo_id = lng.dom(this).data('photo-id'),
 			capture = lng.dom(this).data('capture') === 'true' ? true : false
@@ -415,7 +417,8 @@ App.Events = (function(lng, app, undefined) {
 							{
 								quality: 50,
 								targetHeight: 300,
-								destinationType: Camera.DestinationType.DATA_URL
+								destinationType: Camera.DestinationType.DATA_URL,
+								correctOrientation: true
 							}
 						);
 					} else {
@@ -442,6 +445,7 @@ App.Events = (function(lng, app, undefined) {
 	 *	Photo remove button holdded event.
 	 */
 	lng.dom('section#chronic article#detail ul#chronic_photos_view img').hold(function(event) {
+		if (this.src.indexOf('static/images/connection_fail.png') !== -1) { console.log('return!!!'); return false; };
 		var person_id = lng.dom(this).data('person-id'),
 			chroniccode = lng.dom(this).data('chroniccode'),
 			photo_id = lng.dom(this).data('photo-id'),
@@ -456,8 +460,8 @@ App.Events = (function(lng, app, undefined) {
 			accept: {
 				label: 'Yes, I\'m sure.',
 				callback: function(){
-					app.Data.chronic_photo_remove(photo_id, capture, function(tx, rs) {console.log(tx, rs);
-						app.View.chronic_detail(person_id, chroniccode);console.log('chronic_detail');
+					app.Data.chronic_photo_remove(photo_id, capture, function(tx, rs) {
+						app.View.chronic_detail(person_id, chroniccode);
 					});
 				}
 			},

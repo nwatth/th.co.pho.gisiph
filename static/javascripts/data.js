@@ -194,21 +194,32 @@ App.Data.Sql = (function(lng, app, undefined) {
 
 		garbage = function() {
 			gisiph.transaction(function(tx) {
-				var villages = 'DROP TABLE IF EXISTS villages',
-					houses = 'DROP TABLE IF EXISTS houses',
-					photos_house = 'DROP TABLE IF EXISTS photos_house',
-					persons = 'DROP TABLE IF EXISTS persons',
-					chronics = 'DROP TABLE IF EXISTS chronics',
-					photos_chronic = 'DROP TABLE IF EXISTS photos_chronic',
-					visited = 'DROP TABLE IF EXISTS visited'
-				;
-				tx.executeSql(villages, [], nullHandler, onDbError);
+				var gbs = {
+					villages: 'DROP TABLE IF EXISTS villages',
+					houses: 'DROP TABLE IF EXISTS houses',
+					photos_house: 'DROP TABLE IF EXISTS photos_house',
+					persons: 'DROP TABLE IF EXISTS persons',
+					chronics: 'DROP TABLE IF EXISTS chronics',
+					photos_chronic: 'DROP TABLE IF EXISTS photos_chronic',
+					visited: 'DROP TABLE IF EXISTS visited',
+					gisiph_gps_house: 'DROP TABLE IF EXISTS gisiph_gps_house',
+					gisiph_photo_house: 'DROP TABLE IF EXISTS gisiph_photo_house',
+					gisiph_photo_pchronic: 'DROP TABLE IF EXISTS gisiph_photo_pchronic'
+				};
+
+				for (gb in gbs) {
+					tx.executeSql(gbs[gb], [], nullHandler, onDbError);
+				}
+				/*tx.executeSql(villages, [], nullHandler, onDbError);
 				tx.executeSql(houses, [], nullHandler, onDbError);
 				tx.executeSql(photos_house, [], nullHandler, onDbError);
 				tx.executeSql(persons, [], nullHandler, onDbError);
 				tx.executeSql(chronics, [], nullHandler, onDbError);
 				tx.executeSql(photos_chronic, [], nullHandler, onDbError);
 				tx.executeSql(visited, [], nullHandler, onDbError);
+				tx.executeSql(gisiph_gps_house, [], nullHandler, onDbError);
+				tx.executeSql(gisiph_photo_house, [], nullHandler, onDbError);
+				tx.executeSql(gisiph_photo_pchronic, [], nullHandler, onDbError);*/
 			});
 		},
 

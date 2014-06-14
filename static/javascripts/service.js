@@ -25,42 +25,7 @@ App.Service = (function(lng, app, undefined) {
 		sync_import = function(data) {
 			lng.Notification.show();
 			data.callback = '?';
-			var hostanme = app.Data.auth().hostname;
-			$$.ajax({
-				type: 'POST',
-				url: 'http://' + hostanme + '/dist/php/apis/sync_import.php',
-				data: data,
-				contentType: "application/x-www-form-urlencoded;charset=utf-8",
-				success: function(response) {
-					if (response.prop == 'success') {
-						var dist = app.Data.districts(),
-							i = 0,
-							len = dist.length
-						;
-
-						for (; i < len; i++) {
-							if (data.villcodes.indexOf(dist[i].value) !== -1) {
-								dist[i].checked = 'checked';
-								dist[i].disabled = 'disabled';
-							};
-						};
-
-						lng.Notification.html(lng.dom('#tmpl_util_progress').html());
-						app.Data.stored(response.data, function() {
-							app.Data.districts(dist);
-							app.View.sync_import();
-						});
-					} else if (response.prop == 'fail') {
-						lng.Notification.error('Empty data', 'Please check your list and sync again.', 'warning-sign');
-					} else {
-						lng.Notification.error('Server not found', 'Please check your hostname again.', 'hdd');
-					};
-				},
-				error: function(xhr, type) {
-					console.log(xhr, type);
-				}
-			});
-			/*var hostanme = app.Data.auth().hostname,
+			var hostanme = app.Data.auth().hostname,
 				url = 'http://' + hostanme + '/dist/php/apis/sync_import.php',
 				success = function(response) {
 					if (response.prop == 'success') {
@@ -88,7 +53,7 @@ App.Service = (function(lng, app, undefined) {
 					};
 				},
 				request = $$.post(url, data, success)
-			;*/
+			;
 		},
 		sync_export = function(data) {
 			var in_case = (function(p) {
@@ -304,7 +269,7 @@ App.Service.Map = (function(lng, app, undefined) {
 						.html(
 							'<span class="icon warning-sign"></span>' + 
 							'<strong>No Internet Connection</strong>' + 
-							'<small>Please re-connect and try adain.</small>'
+							'<small>Please re-connect and try again.</small>'
 						)
 					;
 				}
@@ -316,6 +281,7 @@ App.Service.Map = (function(lng, app, undefined) {
 		},
 
 		init = function() {
+			delete window['map_init'];
 			window['map_init'] = function() {
 				App.Service.Map.create();
 				delete window['map_init'];
@@ -364,14 +330,14 @@ App.Service.Map = (function(lng, app, undefined) {
 				var marker = null,
 					infowindow= null
 				;
-
+console.log(navigator);
 				for (var i = 0, len = m.length; i < len; i++) {
 					marker = new google.maps.Marker({
 						position: new google.maps.LatLng(m[i].latitude, m[i].longitude),
 						index: i,
 						house_id: m[i].house_id,
 						title: m[i].address,
-						icon: 'static/images/' + m[i].color_class
+						icon: 'static/images/' + m[i].color_class + '.png'
 					});
 
 					marker.setMap(map_location);
@@ -480,7 +446,7 @@ App.Service.Visualization = (function(lng, app, undefined) {
 		setDataTable = function(columns, rows, option) {console.log(columns);
 			onnlineChecker(function() {
 				for (var i = 0; i < columns.length; i++) {
-					if (typeof columns[i][0] === 'object')
+					if (typeof columns[i][0] !== 'string')
 						data_table.addColumn(columns[i][0]);
 					else
 						data_table.addColumn(columns[i][0], columns[i][1]);

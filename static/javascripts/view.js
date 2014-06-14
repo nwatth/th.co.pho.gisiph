@@ -91,7 +91,12 @@ App.View = (function(lng, app, undefined) {
 
 			// house_detail
 			app.Data.Sql.query(
-				'SELECT houses.house_id, houses.address, (CASE gisiph_gps_house.status WHEN \'DELETE\' THEN 0 WHEN \'INSERT\' THEN gisiph_gps_house.latitude WHEN \'UPDATE\' THEN gisiph_gps_house.latitude ELSE houses.latitude END) AS latitude, (CASE gisiph_gps_house.status WHEN \'DELETE\' THEN 0 WHEN \'INSERT\' THEN gisiph_gps_house.longitude WHEN \'UPDATE\' THEN gisiph_gps_house.longitude ELSE houses.longitude END) AS longitude FROM houses LEFT JOIN gisiph_gps_house ON houses.house_id = gisiph_gps_house.house_id WHERE houses.house_id = ?',
+				'SELECT houses.house_id, houses.address, \
+				(CASE gisiph_gps_house.status WHEN \'DELETE\' THEN 0 WHEN \'INSERT\' THEN gisiph_gps_house.latitude \
+					WHEN \'UPDATE\' THEN gisiph_gps_house.latitude ELSE houses.latitude END) AS latitude, \
+				(CASE gisiph_gps_house.status WHEN \'DELETE\' THEN 0 WHEN \'INSERT\' THEN gisiph_gps_house.longitude \
+					WHEN \'UPDATE\' THEN gisiph_gps_house.longitude ELSE houses.longitude END) AS longitude \
+					FROM houses LEFT JOIN gisiph_gps_house ON houses.house_id = gisiph_gps_house.house_id WHERE houses.house_id = ?',
 				[house_id],
 				function(tx, rs) {
 					var houses = [],
@@ -129,7 +134,15 @@ App.View = (function(lng, app, undefined) {
 
 			// house_photos
 			app.Data.Sql.query(
-				'SELECT * FROM ( SELECT photos_house.photo_id, photos_house.house_id, photos_house.src, \'false\' AS capture, (CASE gisiph_photo_house.status WHEN \'DELETE\' THEN \'DELETE\' ELSE \'INSERT\' END) AS status FROM photos_house LEFT JOIN gisiph_photo_house ON photos_house.photo_id = gisiph_photo_house.ref_id UNION SELECT photo_id, house_id, src, \'ture\' AS capture, gisiph_photo_house.status FROM gisiph_photo_house WHERE gisiph_photo_house.ref_id ISNULL ) AS photos WHERE photos.status <> \'DELETE\' AND photos.house_id = ?',
+				'SELECT * \
+				FROM ( \
+					SELECT photos_house.photo_id, photos_house.house_id, photos_house.src, \'false\' AS capture, \
+					(CASE gisiph_photo_house.status WHEN \'DELETE\' THEN \'DELETE\' ELSE \'INSERT\' END) AS status \
+					FROM photos_house LEFT JOIN gisiph_photo_house ON photos_house.photo_id = gisiph_photo_house.ref_id \
+					UNION \
+					SELECT photo_id, house_id, src, \'ture\' AS capture, gisiph_photo_house.status \
+					FROM gisiph_photo_house WHERE gisiph_photo_house.ref_id ISNULL \
+					) AS photos WHERE photos.status <> \'DELETE\' AND photos.house_id = ?',
 				[house_id],
 				function(tx, rs) {
 					var photos = [],
@@ -137,7 +150,7 @@ App.View = (function(lng, app, undefined) {
 					;
 
 					for (var i = 0, len = rs.rows.length; i < len; i++) {
-						row = rs.rows.item(i);
+						row = rs.rows.item(i);console.log(row);
 						photos.push(row);
 					};
 
@@ -829,7 +842,7 @@ App.View = (function(lng, app, undefined) {
 
 								var pres, top, bot;
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
-									row = rs.rows.item(i);
+									row = rs.rows.item(i);console.log(row);
 									pres = (row.last_pressure || '-1/-1');
 									top = parseInt(pres.substring(0, pres.indexOf('/')));
 									bot = parseInt(pres.substring(pres.indexOf('/')+1, pres.length));
@@ -842,15 +855,15 @@ App.View = (function(lng, app, undefined) {
 								for (k in fill) {
 									if (fill[k].incurrent == true && 
 										fill[k].is_disease == true) rows[6][1]++;
-									else if (fill[k].top_pressure >= 180 && fill[k].is_disease == true &&
-											fill[k].down_pressure >= 110) rows[5][1]++;
-									else if (fill[k].top_pressure >= 160 && fill[k].is_disease == true &&
-											fill[k].down_pressure >= 100) rows[4][1]++;
-									else if (fill[k].top_pressure >= 140 && fill[k].is_disease == true &&
-											fill[k].down_pressure >= 90) rows[3][1]++;
+									else if ((fill[k].top_pressure || fill[k].down_pressure >= 110) >= 180 && 
+										fill[k].is_disease == true) rows[5][1]++;
+									else if ((fill[k].top_pressure >= 160 || fill[k].down_pressure >= 100) && 
+										fill[k].is_disease == true) rows[4][1]++;
+									else if ((fill[k].top_pressure >= 140 || fill[k].down_pressure >= 90) && 
+										fill[k].is_disease == true) rows[3][1]++;
 									else if (fill[k].is_disease == true) rows[2][1]++;
-									else if (fill[k].top_pressure >= 120 && fill[k].is_disease == false &&
-											fill[k].down_pressure >= 80) rows[1][1]++;
+									else if ((fill[k].top_pressure >= 120 || fill[k].down_pressure >= 80) &&
+										fill[k].is_disease == false) rows[1][1]++;
 									else if (fill[k].is_disease == false) rows[0][1]++;
 								};
 
