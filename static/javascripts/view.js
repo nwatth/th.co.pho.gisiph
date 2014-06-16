@@ -596,7 +596,7 @@ App.View = (function(lng, app, undefined) {
 					// ผู้ป่วยโรคเรื้อรัง
 					percent_district_chronics: function() {
 						app.Data.Sql.query(
-							'SELECT chronics.person_id, chronics.disease FROM chronics GROUP BY chronics.person_id, chronics.disease',
+							'SELECT chronics.person_id, chronics.disease, datefirstdiag FROM chronics GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
 								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
@@ -624,11 +624,16 @@ App.View = (function(lng, app, undefined) {
 										vAxis: {minValue:0}
 									},
 									detail = [],
-									fill = {}
+									fill = {},
+									datefirstdiag = '01/01/0001'
 								;
 
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
 									row = rs.rows.item(i);
+
+									if ((new Date(row.datefirstdiag)) - (new Date(datefirstdiag)) > 0) {
+										datefirstdiag = row.datefirstdiag;
+									};
 
 									if (typeof fill[row.person_id] !== 'object')
 										fill[row.person_id] = [];
@@ -664,6 +669,8 @@ App.View = (function(lng, app, undefined) {
 								app.Service.Visualization.setDataTable(columns, rows, option);
 								app.Service.Visualization.render('PieChart');
 
+								lng.dom('#modify').val(datefirstdiag);
+
 								app.Template.create('#tmpl_charts_detail');
 								app.Template.render('#chart_detail', detail);
 							}
@@ -672,7 +679,7 @@ App.View = (function(lng, app, undefined) {
 
 					percent_village_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละหมู่บ้าน */
 						app.Data.Sql.query(
-							'SELECT villages.villname, chronics.person_id, chronics.disease FROM chronics JOIN persons ON chronics.person_id = persons.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode GROUP BY chronics.person_id, chronics.disease',
+							'SELECT villages.villname, chronics.person_id, chronics.disease, datefirstdiag FROM chronics JOIN persons ON chronics.person_id = persons.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
 								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
@@ -705,11 +712,16 @@ App.View = (function(lng, app, undefined) {
 									disease = {
 										diabetes: 0,
 										hypertension: 0
-									}
+									},
+									datefirstdiag = '01/01/0001'
 								;
 
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
 									row = rs.rows.item(i);
+
+									if ((new Date(row.datefirstdiag)) - (new Date(datefirstdiag)) > 0) {
+										datefirstdiag = row.datefirstdiag;
+									};
 
 									if (typeof fill[row.villname] !== 'object')
 										fill[row.villname] = [];
@@ -761,6 +773,8 @@ App.View = (function(lng, app, undefined) {
 								app.Service.Visualization.setDataTable(columns, rows, option);
 								app.Service.Visualization.render('ColumnChart');
 
+								lng.dom('#modify').val(datefirstdiag);
+
 								app.Template.create('#tmpl_charts_detail');
 								app.Template.render('#chart_detail', detail);
 							}
@@ -769,7 +783,7 @@ App.View = (function(lng, app, undefined) {
 
 					percent_year_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละปี */
 						app.Data.Sql.query(
-							'SELECT chronics.person_id, chronics.disease, substr(chronics.datefirstdiag,7,4) AS yearfirstdiag FROM chronics GROUP BY chronics.person_id, chronics.disease',
+							'SELECT chronics.person_id, chronics.disease, substr(chronics.datefirstdiag,7,4) AS yearfirstdiag, datefirstdiag FROM chronics GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
 								var colors = ['#27ae60', '#2980b9', '#d35400', '#2ecc71'],
@@ -802,11 +816,16 @@ App.View = (function(lng, app, undefined) {
 									disease = {
 										diabetes: 0,
 										hypertension: 0
-									}
+									},
+									datefirstdiag = '01/01/0001'
 								;
 
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
 									row = rs.rows.item(i);
+									
+									if ((new Date(row.datefirstdiag)) - (new Date(datefirstdiag)) > 0) {
+										datefirstdiag = row.datefirstdiag;
+									};
 
 									if (typeof fill[row.yearfirstdiag] !== 'object')
 										fill[row.yearfirstdiag] = [];
@@ -846,6 +865,8 @@ App.View = (function(lng, app, undefined) {
 								app.Service.Visualization.setDataTable(columns, rows, option);
 								app.Service.Visualization.render('LineChart');
 
+								lng.dom('#modify').val(datefirstdiag);
+
 								app.Template.create('#tmpl_charts_detail');
 								app.Template.render('#chart_detail', detail);
 							}
@@ -854,7 +875,7 @@ App.View = (function(lng, app, undefined) {
 
 					hypertension_chart: function(villcode) { /* แผนภูมิผู้ป่วยโรคความดันโลหิตสูง */
 						app.Data.Sql.query(
-							'SELECT persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_pressure, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'hypertension\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
+							'SELECT persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_pressure, visited.incurrent, visitdate FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'hypertension\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
 							[villcode],
 							function(tx, rs) {
 								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
@@ -891,12 +912,18 @@ App.View = (function(lng, app, undefined) {
 										}
 									},
 									detail = [],
-									fill = {}
+									fill = {},
+									visitdate = '01/01/0001'
 								;
 
 								var pres, top, bot;
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
-									row = rs.rows.item(i);console.log(row);
+									row = rs.rows.item(i);
+
+									if ((new Date(row.visitdate)) - (new Date(visitdate)) > 0) {
+										visitdate = row.visitdate;
+									};
+
 									pres = (row.last_pressure || '-1/-1');
 									top = parseInt(pres.substring(0, pres.indexOf('/')));
 									bot = parseInt(pres.substring(pres.indexOf('/')+1, pres.length));
@@ -907,17 +934,6 @@ App.View = (function(lng, app, undefined) {
 								};
 
 								for (k in fill) {
-									/*if (fill[k].is_disease == true) {
-										if (fill[k].incurrent == true) rows[6][1]++;
-										else if (fill[k].top_pressure >= 180 || fill[k].down_pressure >= 110) rows[5][1]++;
-										else if (fill[k].top_pressure >= 160 || fill[k].down_pressure >= 100) rows[4][1]++;
-										else if (fill[k].top_pressure >= 140 || fill[k].down_pressure >= 90) rows[3][1]++;
-										else rows[2][1]++;
-									}
-									else {
-										if (fill[k].top_pressure >= 120  || fill[k].down_pressure >= 80) rows[1][1]++;
-										else rows[0][1]++;
-									}*/
 									if (fill[k].incurrent == true && 
 										fill[k].is_disease == true) rows[6][1]++;
 									else if ((fill[k].top_pressure >= 180  || fill[k].down_pressure >= 110)
@@ -944,6 +960,8 @@ App.View = (function(lng, app, undefined) {
 								app.Service.Visualization.setDataTable(columns, rows, option);
 								app.Service.Visualization.render('ColumnChart');
 
+								lng.dom('#modify').val(visitdate);
+
 								app.Template.create('#tmpl_charts_detail');
 								app.Template.render('#chart_detail', detail);
 							}
@@ -952,7 +970,7 @@ App.View = (function(lng, app, undefined) {
 
 					diabetes_chart: function() { /* แผนภูมิผู้ป่วยโรคความดันโลหิตสูง */
 						app.Data.Sql.query(
-							'SELECT persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_sugarblood, visited.incurrent FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'diabetes\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
+							'SELECT persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_sugarblood, visited.incurrent, visitdate FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'diabetes\' OR chronics.disease ISNULL) AND villages.villcode = ? GROUP BY persons.person_id',
 							[villcode],
 							function(tx, rs) {
 								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
@@ -989,11 +1007,16 @@ App.View = (function(lng, app, undefined) {
 										}
 									},
 									detail = [],
-									fill = {}
+									fill = {},
+									visitdate = '01/01/0001'
 								;
 
 								for (var i = 0, len = rs.rows.length; i < len; i++) {
 									row = rs.rows.item(i);
+
+									if ((new Date(row.visitdate)) - (new Date(visitdate)) > 0) {
+										visitdate = row.visitdate;
+									};
 
 									if (typeof fill[row.person_id] !== 'object')
 										fill[row.person_id] = {};
@@ -1026,6 +1049,8 @@ App.View = (function(lng, app, undefined) {
 
 								app.Service.Visualization.setDataTable(columns, rows, option);
 								app.Service.Visualization.render('ColumnChart');
+
+								lng.dom('#modify').val(visitdate);
 
 								app.Template.create('#tmpl_charts_detail');
 								app.Template.render('#chart_detail', detail);

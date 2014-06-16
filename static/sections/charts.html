@@ -9,7 +9,7 @@
     <article id="chart_view" class="active scroll indented">
     	<ul class="list"><li data-icon="warning-sign" class="anchor" style="background-color: #e74c3c;">แผนภูมิแสดงผลจากข้อมูลในเครื่องเท่านั้น</li></ul>
     	<div class="form">
-    		<ul class="list"><li class="anchor contrast">การแสดงผลของแผนภูมิ</li></ul>
+    		<ul class="list"><li id="chart_head" class="anchor contrast">แผนภูมิอัตราผู้ป่วยโรคเรื้อรัง</li></ul> <!-- การแสดงผลของแผนภูมิ -->
 			<fieldset>
 				<label class="select">
 					<select id="chart_selected">
@@ -24,10 +24,10 @@
 				</label>
 			</fieldset>
 			<div id="chart_visualization"></div>
-			<!--<fieldset>
+			<fieldset>
 				<label>ข้อมูลวันที่</label>
-				<input type="text" value="{{timestamp}}" readonly>
-			</fieldset>-->
+				<input id="modify" type="text" readonly>
+			</fieldset>
 		</div>
 
 		<ul id="chart_detail" class="list"></ul>

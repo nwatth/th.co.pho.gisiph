@@ -122,3 +122,7 @@ section .list li.level_6 {
 	-o-box-shadow: inset 4px 0 #000000;
 	box-shadow: inset 4px 0 #000000;
 }
+
+optgroup {
+	background-color: #D2D7D3;
+}

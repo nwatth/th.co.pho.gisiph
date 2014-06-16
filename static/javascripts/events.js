@@ -496,15 +496,6 @@ App.Events = (function(lng, app, undefined) {
 				};
 			}
 		);
-		/*var districts = app.Data.districts();
-		for (var i = 0; i < districts.length; i++) {
-			lng.dom('.hypertension_chart')
-					.append('<option value="hypertension_chart" data-villcode="'+districts[i].value+'">'+
-							districts[i].display+'</option>');
-			lng.dom('.diabetes_chart')
-					.append('<option value="diabetes_chart" data-villcode="'+districts[i].value+'">'+
-							districts[i].display+'</option>');
-		};*/
 		app.Service.Visualization.create();
 		app.View.chart_view();
 	});
@@ -521,6 +512,9 @@ App.Events = (function(lng, app, undefined) {
 		var chart_selected = document.getElementById('chart_selected'),
 			villcode = chart_selected.options[chart_selected.selectedIndex].dataset.villcode
 		;
+
+		lng.dom('#chart_head').text(this.options[this.selectedIndex].parentNode.getAttribute('label'));
+
 		app.Service.Visualization.create();
 		app.View.chart_view(villcode);
 	};

@@ -330,7 +330,7 @@ App.Service.Map = (function(lng, app, undefined) {
 				var marker = null,
 					infowindow= null
 				;
-console.log(navigator);
+
 				for (var i = 0, len = m.length; i < len; i++) {
 					marker = new google.maps.Marker({
 						position: new google.maps.LatLng(m[i].latitude, m[i].longitude),
