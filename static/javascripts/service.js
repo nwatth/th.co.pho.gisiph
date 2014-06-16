@@ -11,7 +11,8 @@ App.Service = (function(lng, app, undefined) {
 						app.Data.districts(response.data.districts);
 						app.Data.Sql.init();
 						App.Service.Map.init();
-						lng.Router.article('account', 'about');
+						//lng.Router.article('account', 'about');
+						lng.Router.article('sync', 'import');
 						lng.Notification.hide();
 					} else if (response.prop == 'fail') {
 						lng.Notification.error('Access denied', 'Please check your username or password again.', 'lock');

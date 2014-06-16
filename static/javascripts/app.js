@@ -35,14 +35,12 @@ var App = (function(lng, undefined) {
 	});
 
 	lng.ready(function() {
-		// screen.lockOrientation('portrait');
 		var auth = App.isAuth();
 		if (!!auth) {
-			/*lng.Router.section('account');*/
 			App.Data.Sql.init();
 			App.Service.Map.init();
 			App.Service.Visualization.init();
-/**/			lng.Router.section('sync');
+			lng.Router.section('account');
 		};
 	});
 

@@ -90,13 +90,12 @@ App.Events = (function(lng, app, undefined) {
 	 *	
 	 *	Login button tapped event.
 	 */
-/**/	lng.dom('section#login article button').tap(function(event) {
-		
+	lng.dom('section#login article button').tap(function(event) {
 		var username = lng.dom('#login [placeholder="Username"]').val(),
 			password = lng.dom('#login [placeholder="Password"]').val(),
 			hostname = lng.dom('#login [placeholder="Hostname"]').val()
 		;
-/**/		app.Service.login({username: username, password: password, hostname: hostname});
+		app.Service.login({username: username, password: password, hostname: hostname});
 	});
 
 
