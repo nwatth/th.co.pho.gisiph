@@ -6,8 +6,20 @@
 		<img data-house-id="{{house_id}}" src="http://maps.googleapis.com/maps/api/staticmap?center={{latitude}},{{longitude}}&zoom=14&size={{width}}x{{height}}&scale=1&markers={{latitude}},{{longitude}}&sensor=false">
 	</div>
 	<fieldset>
-		<label>พิกัด</label>
-		<input type="text" value="{{latitude}}, {{longitude}}" readonly>
+		<label>ละติจูด</label>
+		<input type="text" value="{{latitude}}" readonly>
+	</fieldset>
+	<fieldset>
+		<label>ลอนจิจูด</label>
+		<input type="text" value="{{longitude}}" readonly>
+	</fieldset>
+	<fieldset>
+		<label>ผู้แก้ไข</label>
+		<input type="text" value="{{uedit}}" readonly>
+	</fieldset>
+	<fieldset>
+		<label>เวลาแก้ไข</label>
+		<input type="text" value="{{timestamp}}" readonly>
 	</fieldset>
 	<button class="anchor small" data-house-id="{{house_id}}">แก้ไขพิกัด</button>
 </script>

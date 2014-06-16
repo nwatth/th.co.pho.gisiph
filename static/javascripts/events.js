@@ -342,7 +342,7 @@ App.Events = (function(lng, app, undefined) {
 		if (this.src.indexOf('static/images/connection_fail.png') !== -1) { console.log('return!!!'); return false; };
 		var house_id = lng.dom(this).data('house-id'),
 			photo_id = lng.dom(this).data('photo-id'),
-			capture = lng.dom(this).data('capture') === 'true' ? true : false
+			capture = lng.dom(this).data('capture') == 'true' ? true : false
 		;
 
 		lng.Notification.show();
@@ -444,7 +444,7 @@ App.Events = (function(lng, app, undefined) {
 	 *	
 	 *	Photo remove button holdded event.
 	 */
-	lng.dom('section#chronic article#detail ul#chronic_photos_view img').hold(function(event) {
+	lng.dom('section#chronic article#detail ul#chronic_photos_view img').hold(function(event) {console.log(typeof lng.dom(this).data('photo-id'), lng.dom(this).data('photo-id'));
 		if (this.src.indexOf('static/images/connection_fail.png') !== -1) { console.log('return!!!'); return false; };
 		var person_id = lng.dom(this).data('person-id'),
 			chroniccode = lng.dom(this).data('chroniccode'),
@@ -481,7 +481,22 @@ App.Events = (function(lng, app, undefined) {
 	 *	Chart section loaded event.
 	 */
 	lng.dom('section#charts').on('load', function(event) {
-		var districts = app.Data.districts();
+		app.Data.Sql.query(
+			'SELECT villcode, villname FROM villages',
+			[],
+			function(tx, rs) {
+				for (var i = 0, len = rs.rows.length; i < len; i++) {
+					row = rs.rows.item(i);
+					lng.dom('.hypertension_chart')
+							.append('<option value="hypertension_chart" data-villcode="'+row.villcode+'">'+
+									row.villname+'</option>');
+					lng.dom('.diabetes_chart')
+							.append('<option value="diabetes_chart" data-villcode="'+row.villcode+'">'+
+									row.villname+'</option>');
+				};
+			}
+		);
+		/*var districts = app.Data.districts();
 		for (var i = 0; i < districts.length; i++) {
 			lng.dom('.hypertension_chart')
 					.append('<option value="hypertension_chart" data-villcode="'+districts[i].value+'">'+
@@ -489,7 +504,7 @@ App.Events = (function(lng, app, undefined) {
 			lng.dom('.diabetes_chart')
 					.append('<option value="diabetes_chart" data-villcode="'+districts[i].value+'">'+
 							districts[i].display+'</option>');
-		};
+		};*/
 		app.Service.Visualization.create();
 		app.View.chart_view();
 	});

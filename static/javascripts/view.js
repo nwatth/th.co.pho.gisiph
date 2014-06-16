@@ -95,7 +95,9 @@ App.View = (function(lng, app, undefined) {
 				(CASE gisiph_gps_house.status WHEN \'DELETE\' THEN 0 WHEN \'INSERT\' THEN gisiph_gps_house.latitude \
 					WHEN \'UPDATE\' THEN gisiph_gps_house.latitude ELSE houses.latitude END) AS latitude, \
 				(CASE gisiph_gps_house.status WHEN \'DELETE\' THEN 0 WHEN \'INSERT\' THEN gisiph_gps_house.longitude \
-					WHEN \'UPDATE\' THEN gisiph_gps_house.longitude ELSE houses.longitude END) AS longitude \
+					WHEN \'UPDATE\' THEN gisiph_gps_house.longitude ELSE houses.longitude END) AS longitude, \
+				houses.uedit, houses.timestamp, \
+				gisiph_gps_house.uedit AS gps_uedit, strftime(\'%d/%m/%Y %H:%M:%S\', gisiph_gps_house.timestamp, \'localtime\', \'+543 year\') AS gps_timestamp \
 					FROM houses LEFT JOIN gisiph_gps_house ON houses.house_id = gisiph_gps_house.house_id WHERE houses.house_id = ?',
 				[house_id],
 				function(tx, rs) {
@@ -112,6 +114,8 @@ App.View = (function(lng, app, undefined) {
 							address: row.address,
 							latitude: row.latitude ? row.latitude : 'null',
 							longitude: row.longitude ? row.longitude : 'null',
+							uedit: row.gps_uedit ? row.gps_uedit : row.uedit,
+							timestamp: row.gps_timestamp ? row. gps_timestamp : row.timestamp,
 							width: Math.round(lng.dom('#house_detail').width()) - 16,
 							height: 300
 						});
@@ -137,10 +141,12 @@ App.View = (function(lng, app, undefined) {
 				'SELECT * \
 				FROM ( \
 					SELECT photos_house.photo_id, photos_house.house_id, photos_house.src, \'false\' AS capture, \
-					(CASE gisiph_photo_house.status WHEN \'DELETE\' THEN \'DELETE\' ELSE \'INSERT\' END) AS status \
+					(CASE gisiph_photo_house.status WHEN \'DELETE\' THEN \'DELETE\' ELSE \'INSERT\' END) AS status, \
+					photos_house.uedit, photos_house.timestamp \
 					FROM photos_house LEFT JOIN gisiph_photo_house ON photos_house.photo_id = gisiph_photo_house.ref_id \
 					UNION \
-					SELECT photo_id, house_id, src, \'ture\' AS capture, gisiph_photo_house.status \
+					SELECT photo_id, house_id, src, \'true\' AS capture, gisiph_photo_house.status, \
+					gisiph_photo_house.uedit, strftime(\'%d/%m/%Y %H:%M:%S\', gisiph_photo_house.timestamp, \'localtime\', \'+543 year\') AS timestamp \
 					FROM gisiph_photo_house WHERE gisiph_photo_house.ref_id ISNULL \
 					) AS photos WHERE photos.status <> \'DELETE\' AND photos.house_id = ?',
 				[house_id],
@@ -157,6 +163,8 @@ App.View = (function(lng, app, undefined) {
 					lng.dom('#house_photos_view').hide();
 					lng.dom('#house_photos button').data('house-id', house_id);
 					lng.dom('#house_photos_count').val(photos.length + ' รูป');
+					lng.dom('#house_photos_uedit').val(photos.length ? photos[0].uedit : 'null');
+					lng.dom('#house_photos_timestamp').val(photos.length ? photos[0].timestamp : 'null');
 					if (photos.length > 0) {
 						lng.dom('#house_photos_view').show();
 						app.Template.create('#tmpl_house_photos');
@@ -299,28 +307,74 @@ App.View = (function(lng, app, undefined) {
 
 						var pressure_high = (row.last_pressure || '0/0').split('/')[0],
 							pressure_low = (row.last_pressure || '0/0').split('/')[1],
-							color_case = ''
+							color_hypertension = -1,
+							color_diabetes = -1,
+							case_value = {
+								'6': 'กลุ่มผู้ป่วยที่มีภาวะแทรกซ้อน',
+								'5': 'กลุ่มผู้ป่วยอาการระดับ 3',
+								'4': 'กลุ่มผู้ป่วยอาการระดับ 2',
+								'3': 'กลุ่มผู้ป่วยอาการระดับ 1',
+								'2': 'กลุ่มผู้ป่วยอาการระดับ 0',
+								'1': 'กลุ่มเสี่ยง',
+								'0': 'กลุ่มปกติ',
+								'-1': 'กลุ่มที่ยังไม่ได้รับการตรวจ'
+							},
+							color_case = '',
+							color_from = ''
 						;
 
+						// hypertension
 						if (row.is_disease && row.incurrent) {
-							color_case = 'กลุ่มผู้ป่วยที่มีภาวะแทรกซ้อน';
-						} else if(row.is_disease && (pressure_high > 179 || pressure_low > 109 || row.last_sugarblood > 182)) {
-							color_case = 'กลุ่มผู้ป่วยอาการระดับ 3';
-						} else if(row.is_disease && (pressure_high > 159 || pressure_low > 99 || row.last_sugarblood > 154)) {
-							color_case = 'กลุ่มผู้ป่วยอาการระดับ 2';
-						} else if(row.is_disease && (pressure_high > 139 || pressure_low > 89 || row.last_sugarblood > 125)) {
-							color_case = 'กลุ่มผู้ป่วยอาการระดับ 1';
-						} else if(row.is_disease && (pressure_high > 0 || pressure_low > 0 || row.last_sugarblood > 0)) {
-							color_case = 'กลุ่มผู้ป่วยอาการระดับ 0';
-						} else if(!row.is_disease && (pressure_high > 119 || pressure_low > 79 || row.last_sugarblood > 100)) {
-							color_case = 'กลุ่มเสี่ยง';
-						} else if(!row.is_disease && (pressure_high > 0 || pressure_low > 0 || row.last_sugarblood > 0)) {
-							color_case = 'กลุ่มปกติ';
+							color_hypertension = 6;
+						} else if(row.is_disease && (pressure_high > 179 || pressure_low > 109)) {
+							color_hypertension = 5;
+						} else if(row.is_disease && (pressure_high > 159 || pressure_low > 99)) {
+							color_hypertension = 4;
+						} else if(row.is_disease && (pressure_high > 139 || pressure_low > 89)) {
+							color_hypertension = 3;
+						} else if(row.is_disease && (pressure_high > 0 || pressure_low > 0)) {
+							color_hypertension = 2;
+						} else if(!row.is_disease && (pressure_high > 119 || pressure_low > 79)) {
+							color_hypertension = 1;
+						} else if(!row.is_disease && (pressure_high > 0 || pressure_low > 0)) {
+							color_hypertension = 0;
 						} else {
-							color_case = 'กลุ่มที่ยังไม่ได้รับการตรวจ';
+							color_hypertension = -1;
 						};
 
-						visited.push($$.mix(row, {color_case: color_case}));
+						// diabetes
+						if (row.is_disease && row.incurrent) {
+							color_diabetes = 6;
+						} else if(row.is_disease && row.last_sugarblood > 182) {
+							color_diabetes = 5;
+						} else if(row.is_disease && row.last_sugarblood > 154) {
+							color_diabetes = 4;
+						} else if(row.is_disease && row.last_sugarblood > 125) {
+							color_diabetes = 3;
+						} else if(row.is_disease && row.last_sugarblood > 0) {
+							color_diabetes = 2;
+						} else if(!row.is_disease && row.last_sugarblood > 100) {
+							color_diabetes = 1;
+						} else if(!row.is_disease && row.last_sugarblood > 0) {
+							color_diabetes = 0;
+						} else {
+							color_diabetes = -1;
+						};
+
+
+						// condition color
+						if (color_hypertension > color_diabetes) {
+							color_case = case_value[color_hypertension];
+							color_from = 'โรคความดันโลหิตสูง';
+						} else if (color_hypertension <= color_diabetes) {
+							color_case = case_value[color_diabetes];
+							color_from = 'โรคเบาหวาน';
+						};
+						if (color_hypertension == color_diabetes) {
+							color_from = 'โรคเบาหวานและความดันโลหิตสูง';
+						};
+
+						visited.push($$.mix(row, {color_case: color_case, color_from: color_from}));
 					};
 
 					app.Template.create('#tmpl_person_visited');
@@ -339,7 +393,7 @@ App.View = (function(lng, app, undefined) {
 
 			// person_chronics
 			app.Data.Sql.query(
-				'SELECT person_id, detail, chroniccode, strftime(\'%d/%m/%Y\', datefirstdiag) AS datefirstdiag FROM chronics WHERE person_id = ? ORDER BY datefirstdiag DESC, chroniccode',
+				'SELECT person_id, detail, chroniccode, datefirstdiag FROM chronics WHERE person_id = ? ORDER BY datefirstdiag DESC, chroniccode',
 				[person_id],
 				function(tx, rs) {
 					var chronics = [],
@@ -350,6 +404,8 @@ App.View = (function(lng, app, undefined) {
 						row = rs.rows.item(i);
 						chronics.push(row);
 					};
+
+					lng.dom('#person_chronics').html('');
 
 					app.Template.create('#tmpl_person_chronics');
 					app.Template.render('#person_chronics', chronics);
@@ -366,7 +422,7 @@ App.View = (function(lng, app, undefined) {
 
 			// chronic_detail
 			app.Data.Sql.query(
-				'SELECT person_id, (CASE disease WHEN \'hypertension\' THEN \'โรคความดันโลหิตสูง\' WHEN \'diabetes\' THEN \'โรคเบาหวาน\' END) AS disease, detail, chroniccode, strftime(\'%d/%m/%Y\', datefirstdiag) AS datefirstdiag FROM chronics WHERE person_id = ? AND chroniccode = ?',
+				'SELECT person_id, (CASE disease WHEN \'hypertension\' THEN \'โรคความดันโลหิตสูง\' WHEN \'diabetes\' THEN \'โรคเบาหวาน\' END) AS disease, detail, chroniccode, datefirstdiag FROM chronics WHERE person_id = ? AND chroniccode = ?',
 				[person_id, chroniccode],
 				function(tx, rs) {
 					var chronics = [],
@@ -388,7 +444,17 @@ App.View = (function(lng, app, undefined) {
 
 			// chronic_photos
 			app.Data.Sql.query(
-				'SELECT * FROM ( SELECT photos_chronic.photo_id, photos_chronic.person_id, photos_chronic.chroniccode, photos_chronic.src, \'false\' AS capture, (CASE gisiph_photo_pchronic.status WHEN \'DELETE\' THEN \'DELETE\' ELSE \'INSERT\' END) AS status FROM photos_chronic LEFT JOIN gisiph_photo_pchronic ON photos_chronic.photo_id = gisiph_photo_pchronic.ref_id UNION SELECT ref_id, person_id, chroniccode, src, \'ture\' AS capture, gisiph_photo_pchronic.status FROM gisiph_photo_pchronic WHERE gisiph_photo_pchronic.ref_id ISNULL ) AS photos WHERE photos.status <> \'DELETE\' AND photos.person_id = ? AND photos.chroniccode = ?',
+				'SELECT * \
+				FROM ( \
+					SELECT photos_chronic.photo_id, photos_chronic.person_id, photos_chronic.chroniccode, photos_chronic.src, \'false\' AS capture, \
+					(CASE gisiph_photo_pchronic.status WHEN \'DELETE\' THEN \'DELETE\' ELSE \'INSERT\' END) AS status, \
+					photos_chronic.uedit, photos_chronic.timestamp \
+					FROM photos_chronic LEFT JOIN gisiph_photo_pchronic ON photos_chronic.photo_id = gisiph_photo_pchronic.ref_id \
+				UNION \
+				SELECT photo_id, person_id, chroniccode, src, \'true\' AS capture, gisiph_photo_pchronic.status, \
+					gisiph_photo_pchronic.uedit, strftime(\'%d/%m/%Y %H:%M:%S\', gisiph_photo_pchronic.timestamp, \'localtime\', \'+543 year\') AS timestamp \
+					FROM gisiph_photo_pchronic WHERE gisiph_photo_pchronic.ref_id ISNULL ) AS photos \
+					WHERE photos.status <> \'DELETE\' AND photos.person_id = ? AND photos.chroniccode = ?',
 				[person_id, chroniccode],
 				function(tx, rs) {
 					var photos = [],
@@ -404,6 +470,8 @@ App.View = (function(lng, app, undefined) {
 					lng.dom('#chronic_photos button').data('person-id', person_id);
 					lng.dom('#chronic_photos button').data('chroniccode', chroniccode);
 					lng.dom('#chronic_photos_count').val(photos.length + ' รูป');
+					lng.dom('#chronic_photos_uedit').val(photos.length ? photos[0].uedit : 'null');
+					lng.dom('#chronic_photos_timestamp').val(photos.length ? photos[0].timestamp : 'null');
 					if (photos.length > 0) {
 						lng.dom('#chronic_photos_view').show();
 						app.Template.create('#tmpl_chronic_photos');
@@ -565,8 +633,6 @@ App.View = (function(lng, app, undefined) {
 									if (typeof fill[row.person_id] !== 'object')
 										fill[row.person_id] = [];
 									fill[row.person_id].push(row.disease);
-									
-
 								};
 
 								fill = (function(obj) {
@@ -703,12 +769,12 @@ App.View = (function(lng, app, undefined) {
 
 					percent_year_chronics: function() { /* ผู้ป่วยโรคเรื้อรังในแต่ละปี */
 						app.Data.Sql.query(
-							'SELECT chronics.person_id, chronics.disease, strftime(\'%Y\', chronics.datefirstdiag)+543 AS yearfirstdiag FROM chronics GROUP BY chronics.person_id, chronics.disease',
+							'SELECT chronics.person_id, chronics.disease, substr(chronics.datefirstdiag,7,4) AS yearfirstdiag FROM chronics GROUP BY chronics.person_id, chronics.disease',
 							[],
 							function(tx, rs) {
-								var colors = ['#8e44ad', '#27ae60', '#2980b9', '#d35400', '#2ecc71'],
+								var colors = ['#27ae60', '#2980b9', '#d35400', '#2ecc71'],
 									columns = [
-										['string', 'หมู่บ้าน'], ['number', 'ผู้ป่วยทั้งสองโรค'], ['number', 'ผู้ป่วยโรคเบาหวาน'], ['number', 'ผู้ป่วยโรคความดันโลหิตสูง']
+										['string', 'หมู่บ้าน'], ['number', 'ผู้ป่วยโรคเบาหวาน'], ['number', 'ผู้ป่วยโรคความดันโลหิตสูง']
 									],
 									rows = [],
 									row = {},
@@ -747,6 +813,7 @@ App.View = (function(lng, app, undefined) {
 									fill[row.yearfirstdiag].push({person_id: row.person_id, disease: row.disease});
 								};
 
+								var sum = [0, 0];
 								for (k in fill) {
 									var both = [], diabetes = [], hypertension = [];
 									for (var i = 0; i < fill[k].length; i++) {
@@ -755,37 +822,24 @@ App.View = (function(lng, app, undefined) {
 										else if (fill[k][i].disease === 'hypertension' && hypertension.indexOf(fill[k][i].person_id) === -1)
 											hypertension.push(fill[k][i].person_id);
 									};
-									both = diabetes.filter(function(n) {
-										return hypertension.indexOf(n) > -1;
-									});
-									var i = 0, idx = -1;
-									do {
-										idx = diabetes.indexOf(both[i]);
-										if (idx > -1) diabetes.splice(idx, 1);
-										idx = hypertension.indexOf(both[i]);
-										if (idx > -1) hypertension.splice(idx, 1);
-									} while(++i < both.length);
 
-									rows.push([k, both.length, diabetes.length, hypertension.length]);
+									rows.push([k, diabetes.length, hypertension.length]);
 									disease.diabetes += row.diabetes;
 									disease.hypertension += row.hypertension;
 
+									sum[0] = sum[0] + diabetes.length;
+									sum[1] = sum[1] + hypertension.length;
+
 									detail[0] = $$.mix(row, {
 										color_column: colors[0],
-										column: 'ผู้ป่วยทั้งสองโรค <em>(จำนวน: ' + both.length + ' คน)</em>',
-										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + both.length + ' คน</p>'
+										column: 'โรคเบาหวาน <em>(จำนวน: ' + sum[0] + ' คน)</em>',
+										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + diabetes.length + ' คน</p>'
 									});
 
 									detail[1] = $$.mix(row, {
 										color_column: colors[1],
-										column: 'ผู้ป่วยโรคเบาหวาน <em>(จำนวน: ' + diabetes.length + ' คน)</em>',
-										value: (detail[1] ? detail[1].value : '') + '<p>' + k + ': ' + diabetes.length + ' คน</p>'
-									});
-
-									detail[2] = $$.mix(row, {
-										color_column: colors[2],
-										column: 'ผู้ป่วยโรคความดันโลหิตสูง <em>(จำนวน: ' + hypertension.length + ' คน)</em>',
-										value: (detail[2] ? detail[2].value : '') + '<p>' + k + ': ' + hypertension.length + ' คน</p>'
+										column: 'โรคความดันโลหิตสูง <em>(จำนวน: ' + sum[1] + ' คน)</em>',
+										value: (detail[1] ? detail[1].value : '') + '<p>' + k + ': ' + hypertension.length + ' คน</p>'
 									});
 								};
 

@@ -31,8 +31,22 @@ textarea {
 	position: relative;
 }
 
+#house_photos figure, #chronic_photos figure {
+	display: inline-block;
+	height: 100%;
+}
+
+#house_photos figcaption, #chronic_photos figcaption {
+	position: absolute;
+	line-height: 20px;
+	margin-top: -20px;
+	background: rgba(0,0,0,0.75);
+	color: white;
+}
+
 #house_photos img, #chronic_photos img {
 	height: 100%;
+	min-width: 200px;
 }
 
 .horizontal {
