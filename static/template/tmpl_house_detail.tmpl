@@ -6,12 +6,14 @@
 		<img data-house-id="{{house_id}}" src="http://maps.googleapis.com/maps/api/staticmap?center={{latitude}},{{longitude}}&zoom=14&size={{width}}x{{height}}&scale=1&markers={{latitude}},{{longitude}}&sensor=false">
 	</div>
 	<fieldset>
+		<span id="lat_edit" data-house-id="{{house_id}}" data-lon="{{longitude}}" class="icon edit"></span>
 		<label>ละติจูด</label>
-		<input type="text" value="{{latitude}}" readonly>
+		<input id="latitude" type="text" value="{{latitude}}">
 	</fieldset>
 	<fieldset>
+		<span id="lon_edit" data-house-id="{{house_id}}" data-lat="{{latitude}}" class="icon edit"></span>
 		<label>ลอนจิจูด</label>
-		<input type="text" value="{{longitude}}" readonly>
+		<input id="longitude" type="text" value="{{longitude}}">
 	</fieldset>
 	<fieldset>
 		<label>ผู้แก้ไข</label>

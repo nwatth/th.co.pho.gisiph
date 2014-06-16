@@ -157,7 +157,7 @@ App.View = (function(lng, app, undefined) {
 
 					for (var i = 0, len = rs.rows.length; i < len; i++) {
 						row = rs.rows.item(i);console.log(row);
-						photos.push(row);
+						photos.push($$.mix(row, {uedit: row.capture ? app.Data.auth().fullname : row.uedit}));
 					};
 
 					lng.dom('#house_photos_view').hide();
@@ -463,7 +463,7 @@ App.View = (function(lng, app, undefined) {
 
 					for (var i = 0, len = rs.rows.length; i < len; i++) {
 						row = rs.rows.item(i);
-						photos.push(row);
+						photos.push($$.mix(row, {uedit: row.capture ? app.Data.auth().fullname : row.uedit}));
 					};
 
 					lng.dom('#chronic_photos_view').hide();

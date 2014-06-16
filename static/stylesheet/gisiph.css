@@ -38,8 +38,9 @@ textarea {
 
 #house_photos figcaption, #chronic_photos figcaption {
 	position: absolute;
-	line-height: 20px;
-	margin-top: -20px;
+	line-height: 14px;
+	margin-top: -28px;
+	width: 100%;
 	background: rgba(0,0,0,0.75);
 	color: white;
 }

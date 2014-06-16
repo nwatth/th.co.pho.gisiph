@@ -253,6 +253,74 @@ App.Events = (function(lng, app, undefined) {
 	/*
 	 *	[HOUSE]
 	 *	
+	 *	Edit latitude event.
+	 */
+	lng.dom('section#house article#detail div#house_detail #lat_edit').tap(function(event) {
+		var lat = lng.dom('#latitude').val(),
+			lon = lng.dom(this).data('lon'),
+			house_id = lng.dom(this).data('house-id')
+		;
+
+		lng.Notification.show();
+		lng.Notification.confirm({
+			icon: 'edit',
+			title: 'New Latitude',
+			description: 'Are you sure you want to edit this location ?',
+			accept: {
+				label: 'Yes, I\'m sure.',
+				callback: function(){
+					app.Data.house_gps_change(house_id, {latitude: lat, longitude: lon}, 'UPDATE', function(tx, rs) {
+						app.View.house_detail(house_id);
+					});
+				}
+			},
+			cancel: {
+				label: 'Cancel',
+				callback: function() {}
+			}
+		});
+	});
+
+
+
+
+	/*
+	 *	[HOUSE]
+	 *	
+	 *	Edit longitude event.
+	 */
+	lng.dom('section#house article#detail div#house_detail #lon_edit').tap(function(event) {
+		var lat = lng.dom(this).data('lat'),
+			lon = lng.dom('#longitude').val(),
+			house_id = lng.dom(this).data('house-id')
+		;
+
+		lng.Notification.show();
+		lng.Notification.confirm({
+			icon: 'edit',
+			title: 'New Longitude',
+			description: 'Are you sure you want to edit this location ?',
+			accept: {
+				label: 'Yes, I\'m sure.',
+				callback: function(){
+					app.Data.house_gps_change(house_id, {latitude: lat, longitude: lon}, 'UPDATE', function(tx, rs) {
+						app.View.house_detail(house_id);
+					});
+				}
+			},
+			cancel: {
+				label: 'Cancel',
+				callback: function() {}
+			}
+		});
+	});
+
+
+
+
+	/*
+	 *	[HOUSE]
+	 *	
 	 *	Location remove map holded event.
 	 */
 	lng.dom('section#house article#detail div#house_detail div#house_location img').hold(function(event) {
