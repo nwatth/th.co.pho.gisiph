@@ -120,9 +120,10 @@ App.Events = (function(lng, app, undefined) {
 	 *	House in list tapped event.
 	 */
 	lng.dom('section#management article#houses ul#manage_houses li[data-house-id]').tap(function(event) {
-		var house_id = lng.dom(this).data('house-id');
+		var house_id = lng.dom(this).data('house-id')
+			house_color = (this.className.split(' '))[1];
 
-		app.View.house_detail(house_id);
+		app.View.house_detail(house_id, house_color);
 		lng.Router.section('house');
 	});
 

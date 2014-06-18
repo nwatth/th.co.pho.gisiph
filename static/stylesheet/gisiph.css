@@ -127,3 +127,12 @@ section .list li.level_6 {
 optgroup {
 	background-color: #D2D7D3;
 }
+
+div.color.unseen { background: #cccccc; }
+div.color.level_0 { background: #ffffff; }
+div.color.level_1 { background: #00ff00; }
+div.color.level_2 { background: #007700; }
+div.color.level_3 { background: #ffff00; }
+div.color.level_4 { background: #ff7f00; }
+div.color.level_5 { background: #ff0000; }
+div.color.level_6 { background: #000000; }

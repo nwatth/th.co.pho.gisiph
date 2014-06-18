@@ -338,13 +338,14 @@ App.Service.Map = (function(lng, app, undefined) {
 						index: i,
 						house_id: m[i].house_id,
 						title: m[i].address,
-						icon: 'static/images/' + m[i].color_class + '.png'
+						icon: 'static/images/' + m[i].color_class + '.png',
+						color_class: m[i].color_class
 					});
 
 					marker.setMap(map_location);
 
 					google.maps.event.addListener(marker, 'click', function() {
-						app.View.house_detail(this.house_id);
+						app.View.house_detail(this.house_id, this.color_class);
 						lng.Router.section('house');
 					});
 				};

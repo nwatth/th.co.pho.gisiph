@@ -84,7 +84,7 @@ App.View = (function(lng, app, undefined) {
 			);
 		},
 
-		house_detail = function(house_id) {
+		house_detail = function(house_id, house_color) {
 			lng.dom('#house_detail').empty();
 			lng.dom('#house_photos_view').empty();
 			lng.dom('#house_persons').empty();
@@ -117,7 +117,8 @@ App.View = (function(lng, app, undefined) {
 							uedit: row.gps_uedit ? row.gps_uedit : row.uedit,
 							timestamp: row.gps_timestamp ? row. gps_timestamp : row.timestamp,
 							width: Math.round(lng.dom('#house_detail').width()) - 16,
-							height: 300
+							height: 300,
+							house_color: house_color
 						});
 					};
 
@@ -320,8 +321,10 @@ App.View = (function(lng, app, undefined) {
 								'-1': 'กลุ่มที่ยังไม่ได้รับการตรวจ'
 							},
 							color_case = '',
-							color_from = ''
-						;
+							color_from = '',
+							person_color = '',
+							person_colors = ['level_0', 'level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'level_6']
+						;person_colors['-1'] = 'unseen';
 
 						// hypertension
 						if (row.is_disease && row.incurrent) {
@@ -366,15 +369,17 @@ App.View = (function(lng, app, undefined) {
 						if (color_hypertension > color_diabetes) {
 							color_case = case_value[color_hypertension];
 							color_from = 'โรคความดันโลหิตสูง';
+							person_color = person_colors[color_hypertension];
 						} else if (color_hypertension <= color_diabetes) {
 							color_case = case_value[color_diabetes];
 							color_from = 'โรคเบาหวาน';
+							person_color = person_colors[color_diabetes];
 						};
 						if (color_hypertension == color_diabetes) {
 							color_from = 'โรคเบาหวานและความดันโลหิตสูง';
 						};
 
-						visited.push($$.mix(row, {color_case: color_case, color_from: color_from}));
+						visited.push($$.mix(row, {color_case: color_case, color_from: color_from, person_color: person_color}));
 					};
 
 					app.Template.create('#tmpl_person_visited');
