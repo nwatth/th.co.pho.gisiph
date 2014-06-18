@@ -611,8 +611,8 @@ App.View = (function(lng, app, undefined) {
 									rows = [],
 									row = {},
 									option = {
-										pieStartAngle: 270,
-										colors: colors,
+										// pieStartAngle: 270,
+										// colors: colors,
 										legend: {
 											position: 'bottom',
 											alignment: 'center',
@@ -641,7 +641,7 @@ App.View = (function(lng, app, undefined) {
 								};
 
 								fill = (function(obj) {
-									var tmp = {both: 0, diabetes: 0, hypertension:0};
+									var tmp = {hypertension:0, diabetes: 0, both: 0};
 									for (i in obj) {
 										var d = 0, h = 0;
 										for (j in obj[i]) {
@@ -689,7 +689,7 @@ App.View = (function(lng, app, undefined) {
 									rows = [],
 									row = {},
 									option = {
-										colors: colors,
+										// colors: colors,
 										legend: {
 											position: 'bottom',
 											alignment: 'center',
@@ -753,8 +753,8 @@ App.View = (function(lng, app, undefined) {
 
 									detail[0] = $$.mix(row, {
 										color_column: colors[0],
-										column: 'ผู้ป่วยทั้งสองโรค <em>(' + both.length + ' คน)</em>',
-										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + both.length + ' คน</p>'
+										column: 'ผู้ป่วยโรคความดันโลหิตสูง <em>(' + hypertension.length + ' คน)</em>',
+										value: (detail[0] ? detail[0].value : '') + '<p>' + k + ': ' + hypertension.length + ' คน</p>'
 									});
 
 									detail[1] = $$.mix(row, {
@@ -765,8 +765,8 @@ App.View = (function(lng, app, undefined) {
 
 									detail[2] = $$.mix(row, {
 										color_column: colors[2],
-										column: 'ผู้ป่วยโรคความดันโลหิตสูง <em>(' + hypertension.length + ' คน)</em>',
-										value: (detail[2] ? detail[2].value : '') + '<p>' + k + ': ' + hypertension.length + ' คน</p>'
+										column: 'ผู้ป่วยทั้งสองโรค <em>(' + both.length + ' คน)</em>',
+										value: (detail[2] ? detail[2].value : '') + '<p>' + k + ': ' + both.length + ' คน</p>'
 									});
 								};
 
@@ -793,7 +793,7 @@ App.View = (function(lng, app, undefined) {
 									rows = [],
 									row = {},
 									option = {
-										colors: colors,
+										// colors: colors,
 										legend: {
 											position: 'bottom',
 											alignment: 'center',
