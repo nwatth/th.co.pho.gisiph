@@ -953,7 +953,7 @@ App.View = (function(lng, app, undefined) {
 										css: (i !== 0) ? '' : 'text-shadow: -1px 0 gray, 0 1px gray, 1px 0 gray, 0 -1px gray;',
 										color_column: colors[i],
 										column: 'กลุ่ม' + rows[i][0],
-										value: rows[i][1]
+										value: rows[i][1] + ' คน'
 									};
 								};
 
@@ -1043,7 +1043,7 @@ App.View = (function(lng, app, undefined) {
 										css: (i !== 0) ? '' : 'text-shadow: -1px 0 gray, 0 1px gray, 1px 0 gray, 0 -1px gray;',
 										color_column: colors[i],
 										column: 'กลุ่ม' + rows[i][0],
-										value: rows[i][1]
+										value: rows[i][1] + ' คน'
 									};
 								};
 
