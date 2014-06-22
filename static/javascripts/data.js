@@ -76,8 +76,8 @@ App.Data = (function(lng, app, undefined) {
 			};
 			for (var i = data.persons.length - 1; i >= 0; i--) {
 				app.Data.Sql.query(
-					'INSERT OR IGNORE INTO persons (person_id, house_id, fullname, age, birth, sex, idcard, educate, occupa, nation, origin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-					[data.persons[i].person_id, data.persons[i].house_id, data.persons[i].fullname, data.persons[i].age, data.persons[i].birth, data.persons[i].sex, data.persons[i].idcard, data.persons[i].educate, data.persons[i].occupa, data.persons[i].nation, data.persons[i].origin],
+					'INSERT OR IGNORE INTO persons (person_id, house_id, fullname, age, birth, sex, idcard, educate, occupa, nation, origin, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					[data.persons[i].person_id, data.persons[i].house_id, data.persons[i].fullname, data.persons[i].age, data.persons[i].birth, data.persons[i].sex, data.persons[i].idcard, data.persons[i].educate, data.persons[i].occupa, data.persons[i].nation, data.persons[i].origin, data.persons[i].phone],
 					calc_perc
 				);
 			};
@@ -225,7 +225,7 @@ App.Data.Sql = (function(lng, app, undefined) {
 						var villages = 'CREATE TABLE IF NOT EXISTS villages (villcode INTEGER PRIMARY KEY, villname TEXT)',
 							houses = 'CREATE TABLE IF NOT EXISTS houses (house_id INTEGER PRIMARY KEY, villcode INTEGER, address TEXT, latitude DOUBLE, longitude DOUBLE, uedit VARCHAR(20), status VARCHAR(10), timestamp TIMESTAMP)',
 							photos_house = 'CREATE TABLE IF NOT EXISTS photos_house (photo_id INTEGER PRIMARY KEY, house_id INTEGER, src TEXT, uedit VARCHAR(20), status VARCHAR(10), timestamp TIMESTAMP)',
-							persons = 'CREATE TABLE IF NOT EXISTS persons (person_id INTEGER PRIMARY KEY, house_id INTEGER, fullname TEXT, age INTEGER, birth TEXT, sex TEXT, idcard TEXT, educate TEXT, occupa TEXT, nation TEXT, origin TEXT)',
+							persons = 'CREATE TABLE IF NOT EXISTS persons (person_id INTEGER PRIMARY KEY, house_id INTEGER, fullname TEXT, age INTEGER, birth TEXT, sex TEXT, idcard TEXT, educate TEXT, occupa TEXT, nation TEXT, origin TEXT, phone TEXT)',
 							chronics = 'CREATE TABLE IF NOT EXISTS chronics (person_id INTEGER, disease TEXT, detail TEXT, chroniccode TEXT, datefirstdiag TEXT, PRIMARY KEY ( person_id, chroniccode))',
 							photos_chronic = 'CREATE TABLE IF NOT EXISTS photos_chronic (photo_id INTEGER PRIMARY KEY, person_id INTEGER, chroniccode TEXT, src TEXT, uedit VARCHAR(20), status VARCHAR(10), timestamp TIMESTAMP)',
 							visited = 'CREATE TABLE IF NOT EXISTS visited (person_id INTEGER PRIMARY KEY, last_pressure TEXT, last_sugarblood TEXT, incurrent BOOLEAN, visitdate TEXT)',
