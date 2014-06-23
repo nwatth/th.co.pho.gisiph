@@ -1061,7 +1061,279 @@ App.View = (function(lng, app, undefined) {
 								app.Template.render('#chart_detail', detail);
 							}
 						);
-					} // end of diabetes_chart
+					}, // end of diabetes_chart
+
+					stack_hypertension: function() { /* แผนภูมิจำแนกตามระดับความรุนแรงและหมู่บ้าน (โรคความดันโลหิตสูง) */
+						app.Data.Sql.query(
+							'SELECT villages.villname, persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_pressure, visited.incurrent, visitdate FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'hypertension\' OR chronics.disease ISNULL) GROUP BY persons.person_id',
+							[],
+							function(tx, rs) {
+								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
+									columns = [
+										['string', 'หมู่บ้าน'], ['number', 'กลุ่มปกติ'], [{type: 'string', role: 'style'}], ['number', 'กลุ่มเสี่ยง'], ['number', 'กลุ่มผู้ป่วยระดับ 0'], ['number', 'กลุ่มผู้ป่วยระดับ 1'], ['number', 'กลุ่มผู้ป่วยระดับ 2'], ['number', 'กลุ่มผู้ป่วยระดับ 3'], ['number', 'กลุ่มผู้ป่วยมีโรคแทรกซ้อน']
+									],
+									rows = [],
+									row = {},
+									vill = {},
+									option = {
+										colors: colors,
+										legend: {
+											position: 'none',
+											alignment: 'center',
+											textStyle: {
+												fontName: 'Open Sans',
+												fontSize: 16/1.25
+											}
+										},
+										vAxis: {
+											title: 'จำนวนผู้ป่วย (คน)',
+											minValue:0,
+											titleTextStyle: {
+												fontName: 'Open Sans',
+												fontSize: 14/1.25
+											}
+										},
+										isStacked: true
+									},
+									detail = [],
+									fill = {},
+									visitdate = '01/01/0001'
+								;
+
+								var pres, top, bot;
+								for (var i = 0, len = rs.rows.length; i < len; i++) {
+									row = rs.rows.item(i);
+
+									if (typeof vill[row.villname] !== 'object')
+										vill[row.villname] = [row.villname, 0, 'stroke-color: #000; stroke-width: .1px;', 0, 0, 0, 0, 0, 0];
+
+									if ((new Date(row.visitdate)) - (new Date(visitdate)) > 0) {
+										visitdate = row.visitdate;
+									};
+
+									pres = (row.last_pressure || '-1/-1');
+									top = parseInt(pres.substring(0, pres.indexOf('/')));
+									bot = parseInt(pres.substring(pres.indexOf('/')+1, pres.length));
+
+									if (typeof fill[row.person_id] !== 'object')
+										fill[row.person_id] = {};
+									fill[row.person_id] = {villname: row.villname, is_disease: row.is_disease, top_pressure: top, down_pressure: bot, incurrent: row.incurrent || 0};
+								};
+
+								for (k in fill) {
+									if (fill[k].incurrent == true && 
+										fill[k].is_disease == true) vill[fill[k]['villname']][8]++;
+									else if ((fill[k].top_pressure >= 180  || fill[k].down_pressure >= 110)
+											&& fill[k].is_disease == true) vill[fill[k]['villname']][7]++;
+									else if ((fill[k].top_pressure >= 160 || fill[k].down_pressure >= 100)
+											&& fill[k].is_disease == true) vill[fill[k]['villname']][6]++;
+									else if ((fill[k].top_pressure >= 140 || fill[k].down_pressure >= 90)
+											&& fill[k].is_disease == true) vill[fill[k]['villname']][5]++;
+									else if (fill[k].is_disease == true) vill[fill[k]['villname']][4]++;
+									else if ((fill[k].top_pressure >= 120  || fill[k].down_pressure >= 80)
+											&& fill[k].is_disease == false) vill[fill[k]['villname']][3]++;
+									else if (fill[k].is_disease == false) vill[fill[k]['villname']][1]++;
+								};
+
+								for (k in vill) {
+									rows.push(vill[k]);
+
+									detail[0] = $$.mix(row, {
+										css: 'text-shadow: -1px 0 gray, 0 1px gray, 1px 0 gray, 0 -1px gray;',
+										color_column: colors[0],
+										column: columns[1][1],
+										value: (detail[0] ? detail[0].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][1] + ' คน</p>'
+									});
+
+									detail[1] = $$.mix(row, {
+										css: '',
+										color_column: colors[1],
+										column: columns[3][1],
+										value: (detail[1] ? detail[1].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][3] + ' คน</p>'
+									});
+
+									detail[2] = $$.mix(row, {
+										css: '',
+										color_column: colors[2],
+										column: columns[4][1],
+										value: (detail[2] ? detail[2].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][4] + ' คน</p>'
+									});
+
+									detail[3] = $$.mix(row, {
+										css: '',
+										color_column: colors[3],
+										column: columns[5][1],
+										value: (detail[3] ? detail[3].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][5] + ' คน</p>'
+									});
+
+									detail[4] = $$.mix(row, {
+										css: '',
+										color_column: colors[4],
+										column: columns[6][1],
+										value: (detail[4] ? detail[4].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][6] + ' คน</p>'
+									});
+
+									detail[5] = $$.mix(row, {
+										css: '',
+										color_column: colors[5],
+										column: columns[7][1],
+										value: (detail[5] ? detail[5].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][7] + ' คน</p>'
+									});
+
+									detail[6] = $$.mix(row, {
+										css: '',
+										color_column: colors[6],
+										column: columns[8][1],
+										value: (detail[6] ? detail[6].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][8] + ' คน</p>'
+									});
+								}
+
+								app.Service.Visualization.setDataTable(columns, rows, option);
+								app.Service.Visualization.render('ColumnChart');
+
+								lng.dom('#modify').val(visitdate);
+
+								app.Template.create('#tmpl_charts_detail');
+								app.Template.render('#chart_detail', detail);
+							}
+						);
+					}, // end of stack_hypertension
+
+					stack_diabetes: function() { /* แผนภูมิจำแนกตามระดับความรุนแรงและหมู่บ้าน (โรคเบาหวาน) */
+						app.Data.Sql.query(
+							'SELECT villages.villname, persons.person_id, chronics.disease IS NOT NULL AS is_disease, visited.last_sugarblood, visited.incurrent, visitdate FROM persons LEFT JOIN chronics ON persons.person_id = chronics.person_id JOIN visited ON persons.person_id = visited.person_id JOIN houses ON persons.house_id = houses.house_id JOIN villages ON houses.villcode = villages.villcode WHERE (chronics.disease = \'diabetes\' OR chronics.disease ISNULL) GROUP BY persons.person_id',
+							[],
+							function(tx, rs) {
+								var colors = ['#FFFFFF', '#00FF00', '#007700', '#FFFF00', '#FF7F00', '#FF0000', '#000000'],
+									columns = [
+										['string', 'หมู่บ้าน'], ['number', 'กลุ่มปกติ'], [{type: 'string', role: 'style'}], ['number', 'กลุ่มเสี่ยง'], ['number', 'กลุ่มผู้ป่วยระดับ 0'], ['number', 'กลุ่มผู้ป่วยระดับ 1'], ['number', 'กลุ่มผู้ป่วยระดับ 2'], ['number', 'กลุ่มผู้ป่วยระดับ 3'], ['number', 'กลุ่มผู้ป่วยมีโรคแทรกซ้อน']
+									],
+									rows = [],
+									row = {},
+									vill = {},
+									option = {
+										colors: colors,
+										legend: {
+											position: 'none',
+											alignment: 'center',
+											textStyle: {
+												fontName: 'Open Sans',
+												fontSize: 16/1.25
+											}
+										},
+										vAxis: {
+											title: 'จำนวนผู้ป่วย (คน)',
+											minValue:0,
+											titleTextStyle: {
+												fontName: 'Open Sans',
+												fontSize: 14/1.25
+											}
+										},
+										isStacked: true
+									},
+									detail = [],
+									fill = {},
+									visitdate = '01/01/0001'
+								;
+
+								var pres, top, bot;
+								for (var i = 0, len = rs.rows.length; i < len; i++) {
+									row = rs.rows.item(i);
+
+									if (typeof vill[row.villname] !== 'object')
+										vill[row.villname] = [row.villname, 0, 'stroke-color: #000; stroke-width: .1px;', 0, 0, 0, 0, 0, 0];
+
+									if ((new Date(row.visitdate)) - (new Date(visitdate)) > 0) {
+										visitdate = row.visitdate;
+									};
+
+									pres = (row.last_pressure || '-1/-1');
+									top = parseInt(pres.substring(0, pres.indexOf('/')));
+									bot = parseInt(pres.substring(pres.indexOf('/')+1, pres.length));
+
+									if (typeof fill[row.person_id] !== 'object')
+										fill[row.person_id] = {};
+									fill[row.person_id] = {villname: row.villname, is_disease: row.is_disease, last_sugarblood: parseInt(row.last_sugarblood), incurrent: row.incurrent || 0};
+								};
+
+								for (k in fill) {
+									if (fill[k].incurrent == true && 
+										fill[k].is_disease == true) vill[fill[k]['villname']][8]++;
+									else if (fill[k].last_sugarblood >= 183 && fill[k].is_disease == true)
+										vill[fill[k]['villname']][7]++;
+									else if (fill[k].last_sugarblood >= 155 && fill[k].is_disease == true)
+										vill[fill[k]['villname']][6]++;
+									else if (fill[k].last_sugarblood >= 126 && fill[k].is_disease == true)
+										vill[fill[k]['villname']][5]++;
+									else if (fill[k].is_disease == true) vill[fill[k]['villname']][4]++;
+									else if (fill[k].last_sugarblood >= 100 && fill[k].is_disease == false)
+										vill[fill[k]['villname']][3]++;
+									else if (fill[k].is_disease == false) vill[fill[k]['villname']][1]++;
+								};
+
+								for (k in vill) {
+									rows.push(vill[k]);
+
+									detail[0] = $$.mix(row, {
+										css: 'text-shadow: -1px 0 gray, 0 1px gray, 1px 0 gray, 0 -1px gray;',
+										color_column: colors[0],
+										column: columns[1][1],
+										value: (detail[0] ? detail[0].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][1] + ' คน</p>'
+									});
+
+									detail[1] = $$.mix(row, {
+										css: '',
+										color_column: colors[1],
+										column: columns[3][1],
+										value: (detail[1] ? detail[1].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][3] + ' คน</p>'
+									});
+
+									detail[2] = $$.mix(row, {
+										css: '',
+										color_column: colors[2],
+										column: columns[4][1],
+										value: (detail[2] ? detail[2].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][4] + ' คน</p>'
+									});
+
+									detail[3] = $$.mix(row, {
+										css: '',
+										color_column: colors[3],
+										column: columns[5][1],
+										value: (detail[3] ? detail[3].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][5] + ' คน</p>'
+									});
+
+									detail[4] = $$.mix(row, {
+										css: '',
+										color_column: colors[4],
+										column: columns[6][1],
+										value: (detail[4] ? detail[4].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][6] + ' คน</p>'
+									});
+
+									detail[5] = $$.mix(row, {
+										css: '',
+										color_column: colors[5],
+										column: columns[7][1],
+										value: (detail[5] ? detail[5].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][7] + ' คน</p>'
+									});
+
+									detail[6] = $$.mix(row, {
+										css: '',
+										color_column: colors[6],
+										column: columns[8][1],
+										value: (detail[6] ? detail[6].value : '') + '<p>' + vill[k][0] + ': ' + vill[k][8] + ' คน</p>'
+									});
+								}
+
+								app.Service.Visualization.setDataTable(columns, rows, option);
+								app.Service.Visualization.render('ColumnChart');
+
+								lng.dom('#modify').val(visitdate);
+
+								app.Template.create('#tmpl_charts_detail');
+								app.Template.render('#chart_detail', detail);
+							}
+						);
+					}, // end of stack_diabetes
 				}
 				
 			;

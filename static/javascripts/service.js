@@ -445,7 +445,7 @@ App.Service.Visualization = (function(lng, app, undefined) {
 			return rows;
 		},
 
-		setDataTable = function(columns, rows, option) {console.log(columns);
+		setDataTable = function(columns, rows, option) {
 			onnlineChecker(function() {
 				for (var i = 0; i < columns.length; i++) {
 					if (typeof columns[i][0] !== 'string')

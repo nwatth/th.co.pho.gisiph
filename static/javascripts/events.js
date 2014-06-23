@@ -553,6 +553,8 @@ App.Events = (function(lng, app, undefined) {
 			'SELECT villcode, villname FROM villages',
 			[],
 			function(tx, rs) {
+				lng.dom('.hypertension_chart').html('');
+				lng.dom('.diabetes_chart').html('');
 				for (var i = 0, len = rs.rows.length; i < len; i++) {
 					row = rs.rows.item(i);
 					lng.dom('.hypertension_chart')
