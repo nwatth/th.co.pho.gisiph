@@ -11,3 +11,6 @@
 ## Getting started
 1. ติดตั้งไฟล์ .apk ลงบน android device
 2. sync ข้อมูลจาก GISIPH server
+
+## Wiki
+รายละเอียดเอกสารสามารถอ่านได้[ที่นี่](https://github.com/nwatth/th.co.pho.gisiph/wiki)
