@@ -9,8 +9,9 @@
 
 
 ## Getting started
-1. ติดตั้งไฟล์ .apk ลงบน android device
-2. sync ข้อมูลจาก GISIPH server
+1. ทำการ [ดาวน์โหลด](https://codeload.github.com/gigsth/gisiph/zip/v1.0)ไฟล์ .apk แล้ว copy ไปไว้บน android device
+2. ติดตั้งไฟล์ .apk ลงบน android device
+3. ทำการเข้าสู่ระบบ และ sync ข้อมูลจาก GISIPH server
 
 ## Wiki
 รายละเอียดเอกสารสามารถอ่านได้[ที่นี่](https://github.com/nwatth/th.co.pho.gisiph/wiki)
