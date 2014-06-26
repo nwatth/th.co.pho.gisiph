@@ -9,7 +9,7 @@
 
 
 ## Getting started
-1. ทำการ [ดาวน์โหลด](https://codeload.github.com/gigsth/gisiph/zip/v1.0)ไฟล์ .apk แล้ว copy ไปไว้บน android device
+1. ทำการ [ดาวน์โหลด](https://www.dropbox.com/s/mk2b6jw4sw4pa8y/GISIPH%20-%20v1.0.apk?dl=1)ไฟล์ .apk แล้ว copy ไปไว้บน android device
 2. ติดตั้งไฟล์ .apk ลงบน android device
 3. ทำการเข้าสู่ระบบ และ sync ข้อมูลจาก GISIPH server
 
